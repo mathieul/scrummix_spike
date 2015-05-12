@@ -7,9 +7,21 @@
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
   <body id="scrummix" class="pushable">
-    <%= render view_module(@conn), "top_bar.html" %>
+    <%= render Scrummix.SharedView, "top_bar.html" %>
 
-    <%= @inner %>
+    <div class="pusher">
+      <div class="app-content full height">
+        <div class="container">
+          <h2 class="ui header header-title">
+            <i class="home icon"></i>
+            <%= @title || "TODO" %>
+          </h2>
+          <%= @inner %>
+        </div>
+      </div>
+
+      <%= render Scrummix.SharedView, "bottom_bar.html" %>
+    </div>
 
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
     <script>require("web/static/js/app")</script>
