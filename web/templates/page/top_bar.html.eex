@@ -1,0 +1,16 @@
+<div class="ui fixed inverted main menu">
+  <div class="container">
+    <div class="left item">
+      <strong>Scrummix</strong>
+    </div>
+    <div class="right menu">
+      <a class="popup icon home item" data-content="Home page" href="/">
+        <i class="alternate home icon"></i>
+        Home
+      <a class="popup icon calendar outline item" data-content="Daily" href="/daily/sections">
+        <i class="alternate calendar outline icon"></i>
+        Daily
+      </a>
+    </div>
+  </div>
+</div>
