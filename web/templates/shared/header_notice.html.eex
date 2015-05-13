@@ -9,6 +9,6 @@
         <p><%= get_flash(@conn, :error) %></p>
       </div>
     <%= true -> %>
-      <%= render_existing view_module(@conn), "title." <> controller_template(@conn) %>
+      <%= render_dynamic_content(@conn, "header") %>
   <%= end %>
 </h2>
