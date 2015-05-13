@@ -1,0 +1,14 @@
+<h2 class="ui header header-title">
+  <%= cond do %>
+    <%= has_flash?(@conn, "notice") -> %>
+      <div class="ui message green">
+        <p><%= get_flash(@conn, :notice) %></p>
+      </div>
+    <%= has_flash?(@conn, "error") -> %>
+      <div class="ui message red">
+        <p><%= get_flash(@conn, :error) %></p>
+      </div>
+    <%= true -> %>
+      <%= render_existing view_module(@conn), "title." <> controller_template(@conn) %>
+  <%= end %>
+</h2>

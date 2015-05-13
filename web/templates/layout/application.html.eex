@@ -12,10 +12,7 @@
     <div class="pusher">
       <div class="app-content full height">
         <div class="container">
-          <h2 class="ui header header-title">
-            <i class="home icon"></i>
-            <%= @title || "TODO" %>
-          </h2>
+          <%= render Scrummix.SharedView, "header_notice.html", conn: @conn %>
           <%= @inner %>
         </div>
       </div>

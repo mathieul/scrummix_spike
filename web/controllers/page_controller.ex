@@ -4,6 +4,7 @@ defmodule Scrummix.PageController do
   plug :action
 
   def index(conn, _params) do
-    render conn, "index.html", title: "Home"
+    conn
+    |> render("index.html")
   end
 end
