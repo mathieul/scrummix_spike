@@ -23,5 +23,6 @@
 
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
     <script>require("web/static/js/app")</script>
+    <%= render_dynamic_content(@conn, "post_body") %>
   </body>
 </html>

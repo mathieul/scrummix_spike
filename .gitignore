@@ -4,6 +4,8 @@
 /*.ez
 /*.swp
 
+.DS_Store
+
 # Generate on crash by the VM
 erl_crash.dump
 
