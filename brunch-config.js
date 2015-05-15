@@ -1,19 +1,15 @@
 exports.config = {
-  // See http://brunch.io/#documentation for docs.
   files: {
     javascripts: {
-      joinTo: 'js/app.js'
-      // To change the order of concatenation of files, explictly mention here
-      // https://github.com/brunch/brunch/tree/stable/docs#concatenation
-      // order: {
-      //   before: [
-      //     'web/static/vendor/js/jquery-2.1.1.js',
-      //     'web/static/vendor/js/bootstrap.min.js'
-      //   ]
-      // }
+      joinTo: {
+        'js/app.js':    /^web\/static/,
+        'js/vendor.js': /^(bower_components|vendor)/
+      }
     },
     stylesheets: {
-      joinTo: 'css/app.css'
+      joinTo: {
+        'css/app.css': /^(web\/static\/css|bower_components|vendor)/
+      }
     },
     templates: {
       joinTo: 'js/app.js'
@@ -32,7 +28,15 @@ exports.config = {
   // Configure your plugins
   plugins: {
     babel: {
-      ignore: [/^(web\/static\/vendor)/]
+      ignore: [/^(web\/static\/vendor)/],
+      resolveModuleSource: function (source, filename) {
+        return source;
+      }//,
+      // jshint: {
+      //   options: {
+      //     esnext: true
+      //   }
+      // }
     }
   }
 };
