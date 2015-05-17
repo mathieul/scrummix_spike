@@ -6,9 +6,12 @@ class Application extends React.Component {
     super(props);
     this.state = {
       sections: [
-        {color: 'teal', label: 'Yesterday'},
-        {color: 'purple', label: 'Today'},
-        {color: 'orange', label: 'Impediments'}
+        {color: 'teal', label: 'Yesterday', tasks: [
+          {label: "first task", completed_at: new Date("2015-03-09 09:03")},
+          {label: "second task", completed_at: null}
+        ]},
+        {color: 'purple', label: 'Today', tasks: []},
+        {color: 'orange', label: 'Impediments', tasks: []}
       ]
     };
   }
@@ -20,5 +23,5 @@ class Application extends React.Component {
 
 React.render(
   <Application />,
-  document.getElementById('example')
+  document.getElementById('daily-index')
 );
