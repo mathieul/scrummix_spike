@@ -34,6 +34,7 @@ defmodule Scrummix.Mixfile do
      {:phoenix_ecto, "~> 0.4"},
      {:postgrex, ">= 0.0.0"},
      {:phoenix_live_reload, "~> 0.4"},
-     {:cowboy, "~> 1.0"}]
+     {:cowboy, "~> 1.0"},
+     {:timex, "~> 0.13.4"}]
   end
 end
