@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title><%= render_dynamic_content(@conn, "title") || "Scrummix" %></title>
+    <title><%= render_dynamic_content(@conn, "title", %{}) || "Scrummix" %></title>
     <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
   </head>
   <body id="scrummix" class="pushable">
@@ -24,6 +24,6 @@
     <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
     <script src="<%= static_path(@conn, "/js/vendor.js") %>"></script>
     <script>require("web/static/js/app")</script>
-    <%= render_dynamic_content(@conn, "post_body") %>
+    <%= render_dynamic_content(@conn, "post_body", %{data: @data}) %>
   </body>
 </html>

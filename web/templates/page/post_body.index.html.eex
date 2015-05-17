@@ -1,1 +1,6 @@
-<script>require("web/static/js/apps/daily-index")</script>
+<script>
+  window.dailyIndexdata = {
+    sections: <%= {:safe, @data.sections_json} %>
+  };
+  require("web/static/js/apps/daily-index");
+</script>

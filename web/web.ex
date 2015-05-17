@@ -30,6 +30,7 @@ defmodule Scrummix.Web do
       alias Scrummix.Repo
       import Ecto.Model
       import Ecto.Query, only: [from: 2]
+      import Phoenix.View, only: [render_to_string: 3]
 
       # Import URL helpers from the router
       import Scrummix.Router.Helpers

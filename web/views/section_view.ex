@@ -6,10 +6,16 @@ defmodule Scrummix.SectionView do
   end
 
   def render("show.json", %{section: section}) do
-    %{data: render_one(section, "section.json")}
+    %{section: render_one(section, "section.json")}
   end
 
   def render("section.json", %{section: section}) do
-    %{id: section.id, label: section.label, color: section.color, position: section.position}
+    %{
+      id: section.id,
+      label: section.label,
+      color: section.color,
+      position: section.position,
+      tasks: []
+    }
   end
 end
