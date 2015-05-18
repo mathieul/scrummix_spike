@@ -1,5 +1,5 @@
 <script>
-  window.dailyIndexdata = {
+  window.Scrummix = {
     sections: <%= {:safe, @data.sections_json} %>
   };
   require("web/static/js/apps/daily-index");

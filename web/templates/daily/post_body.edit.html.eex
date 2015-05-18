@@ -1,0 +1,6 @@
+<script>
+  window.Scrummix = {
+    section: <%= {:safe, @data.section_json} %>
+  };
+  require("web/static/js/apps/daily-edit");
+</script>

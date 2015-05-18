@@ -23,6 +23,9 @@ defmodule Scrummix.Router do
     pipe_through :browser # Use the default browser stack
 
     get "/", PageController, :index
-    get "/daily", DailyController, :index
+    scope "/daily" do
+      get "/", DailyController, :index
+      get "/edit/:section_id", DailyController, :edit
+    end
   end
 end

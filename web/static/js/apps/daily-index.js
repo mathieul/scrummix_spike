@@ -7,7 +7,7 @@ class Application extends React.Component {
   }
 }
 
-let sections = window.dailyIndexdata.sections.sections;
+let sections = Scrummix.sections.sections;
 
 React.render(
   <Application sections={sections} />,
