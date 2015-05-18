@@ -3,13 +3,12 @@
 export default class SectionItemViewer extends React.Component {
   render() {
     let section = this.props.section;
-    let dataEditUrl = '/todo';
 
     return (
       <div className="ui raised segment">
         <div className={ `ui ${section.color} ribbon label` }>{ section.label }</div>
         <div className="ui right internal attached rail">
-          <a href={ dataEditUrl } className="ui icon button right floated">
+          <a href={ `/daily/edit/${section.id}` } className="ui icon button right floated">
             <i className="write icon"></i>
           </a>
         </div>
