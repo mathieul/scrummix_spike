@@ -3,6 +3,7 @@
 export default class TaskEditor extends React.Component {
   render() {
     let task = this.props.task;
+    let completedClassName = task.completed_at ? 'task-completed' : null;
 
     return (
       <div className="item task-editor">
@@ -11,10 +12,10 @@ export default class TaskEditor extends React.Component {
             <div className="ui grid">
               <div className="fourteen wide column">
                 <div className="inline field">
-                  <div className="ui toggle checkbox">
-                    <input type="checkbox" checked="{ '' }" />
+                  <div className="ui toggle checkbox" ref="toggle">
+                    <input type="checkbox" checked={ !!task.completed_at } />
                   </div>
-                  <span className="task-completed">{ task.label }</span>
+                  <span className={ completedClassName }>{ task.label }</span>
                 </div>
               </div>
               <div className="two wide column">
@@ -27,5 +28,12 @@ export default class TaskEditor extends React.Component {
         </div>
       </div>
     );
+  }
+
+  componentDidMount() {
+    let checkboxNode = React.findDOMNode(this.refs.toggle);
+    if (checkboxNode) {
+      jQuery(checkboxNode).checkbox();
+    }
   }
 }

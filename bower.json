@@ -8,7 +8,7 @@
   },
   "overrides": {
     "react": {
-        "moduleType": "es6"
+      "main": "react-with-addons.js"
     }
   }
 }

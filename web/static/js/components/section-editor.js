@@ -1,7 +1,14 @@
 import TaskEditor from "./task-editor";
+import ActionsTasks from "../actions/tasks";
 /* global React */
 
-export default class SectionEditor extends React.Component {
+export default React.createClass({
+  mixins: [React.addons.LinkedStateMixin],
+
+  getInitialState() {
+    return {newTaskLabel: null};
+  },
+
   render() {
     let section = this.props.section;
     let itemNodes = section.tasks.map(function (task) {
@@ -10,7 +17,7 @@ export default class SectionEditor extends React.Component {
 
     return (
       <div className="section-editor">
-        <form className="ui form" e-submit="add_task" role="form">
+        <form className="ui form" onSubmit={ this.handleSubmit } role="form">
           <h4 className="ui dividing header">{ section.label }</h4>
           <div className="one field">
             <div className="field">
@@ -18,7 +25,7 @@ export default class SectionEditor extends React.Component {
                 <div className="fourteen wide column">
                   <input type="text"
                          placeholder="Enter new task"
-                         value=""
+                         valueLink={ this.linkState('newTaskLabel') }
                          autofocus />
                 </div>
                 <div className="two wide column">
@@ -37,5 +44,10 @@ export default class SectionEditor extends React.Component {
         </form>
       </div>
     );
+  },
+
+  handleSubmit(event) {
+    event.preventDefault();
+    ActionsTasks.addTask(this.state.newTaskLabel, this.props.section);
   }
-}
+});
