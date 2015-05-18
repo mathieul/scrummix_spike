@@ -2,12 +2,13 @@ import TaskEditor from "./task-editor";
 import ActionsTasks from "../actions/tasks";
 /* global React */
 
-export default React.createClass({
-  mixins: [React.addons.LinkedStateMixin],
-
-  getInitialState() {
-    return {newTaskLabel: null};
-  },
+export default class SectionEditor extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {newTaskLabel: null};
+    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleChange = this.handleChange.bind(this);
+  }
 
   render() {
     let section = this.props.section;
@@ -25,7 +26,8 @@ export default React.createClass({
                 <div className="fourteen wide column">
                   <input type="text"
                          placeholder="Enter new task"
-                         valueLink={ this.linkState('newTaskLabel') }
+                         value={ this.state.newTaskLabel }
+                         onChange={ this.handleChange }
                          autofocus />
                 </div>
                 <div className="two wide column">
@@ -44,10 +46,14 @@ export default React.createClass({
         </form>
       </div>
     );
-  },
+  }
+
+  handleChange(event) {
+    this.setState({newTaskLabel: event.target.value});
+  }
 
   handleSubmit(event) {
     event.preventDefault();
     ActionsTasks.addTask(this.state.newTaskLabel, this.props.section);
   }
-});
+}
