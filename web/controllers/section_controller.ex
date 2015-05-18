@@ -7,7 +7,7 @@ defmodule Scrummix.SectionController do
   plug :action
 
   def index(conn, _params) do
-    sections = Repo.all(Section)
+    sections = Section.all_with_tasks |> Repo.all
     render(conn, "index.json", sections: sections)
   end
 
@@ -25,7 +25,7 @@ defmodule Scrummix.SectionController do
   end
 
   def show(conn, %{"id" => id}) do
-    section = Repo.get(Section, id)
+    section = Section.find_with_tasks(id) |> Repo.one
     render conn, "show.json", section: section
   end
 

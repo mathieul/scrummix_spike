@@ -15,7 +15,10 @@ defmodule Scrummix.SectionView do
       label: section.label,
       color: section.color,
       position: section.position,
-      tasks: []
+      tasks: Enum.map(section.tasks, &render_task/1)
     }
   end
+
+  defp render_task(task),
+    do: Scrummix.TaskView.render("task.json", %{task: task})
 end

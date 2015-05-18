@@ -7,7 +7,8 @@ defmodule Scrummix.PageController do
   plug :action
 
   def index(conn, _params) do
-    data = %{sections_json: render_to_string(SectionView, "index.json", %{sections: Repo.all(Section)})}
+    sections = Section.all_with_tasks |> Repo.all
+    data = %{sections_json: render_to_string(SectionView, "index.json", %{sections: sections})}
     conn
     |> assign(:data, data)
     |> render("index.html")
