@@ -1,6 +1,6 @@
 /* global React */
 
-export default class TaskEditor extends React.Component {
+export default React.createClass({
   render() {
     let task = this.props.task;
     let completedClassName = task.completed_at ? 'task-completed' : null;
@@ -28,7 +28,7 @@ export default class TaskEditor extends React.Component {
         </div>
       </div>
     );
-  }
+  },
 
   componentDidMount() {
     let checkboxNode = React.findDOMNode(this.refs.toggle);
@@ -36,4 +36,4 @@ export default class TaskEditor extends React.Component {
       jQuery(checkboxNode).checkbox();
     }
   }
-}
+});

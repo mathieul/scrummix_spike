@@ -1,7 +1,7 @@
 import SectionItemViewer from './section-item-viewer';
 /* global React */
 
-export default class SectionListViewer extends React.Component {
+export default React.createClass({
   render() {
     let itemNodes = this.props.sections.map(function (section) {
       return <SectionItemViewer key={`section-${section.id}`} section={section} />;
@@ -9,4 +9,4 @@ export default class SectionListViewer extends React.Component {
 
     return <div className="section-list-viewer">{ itemNodes }</div>;
   }
-}
+});

@@ -1,6 +1,6 @@
 /* global React */
 
-export default class SectionItemViewer extends React.Component {
+export default React.createClass({
   render() {
     let section = this.props.section;
 
@@ -17,7 +17,7 @@ export default class SectionItemViewer extends React.Component {
         </div>
       </div>
     );
-  }
+  },
 
   renderTasks(tasks) {
     if (tasks.length === 0) {
@@ -43,4 +43,4 @@ export default class SectionItemViewer extends React.Component {
       });
     }
   }
-};
+});

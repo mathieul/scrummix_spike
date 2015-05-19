@@ -1,17 +1,18 @@
 import TaskEditor from "./task-editor";
-import ActionsTasks from "../actions/tasks";
+import ActionTasks from "../actions/tasks";
 /* global React */
 
-export default class SectionEditor extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {newTaskLabel: null};
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleChange = this.handleChange.bind(this);
-  }
+export default React.createClass({
+  getInitialState() {
+    return {newTaskLabel: null};
+  },
 
   render() {
     let section = this.props.section;
+    if (!section) {
+      return <div className="empty-section-editor"></div>;
+    }
+
     let itemNodes = section.tasks.map(function (task) {
       return <TaskEditor key={ `task-${task.id}` } task={ task } />;
     });
@@ -46,14 +47,15 @@ export default class SectionEditor extends React.Component {
         </form>
       </div>
     );
-  }
+  },
 
   handleChange(event) {
     this.setState({newTaskLabel: event.target.value});
-  }
+  },
 
   handleSubmit(event) {
     event.preventDefault();
-    ActionsTasks.addTask(this.state.newTaskLabel, this.props.section);
+    ActionTasks.addTask(this.state.newTaskLabel);
+    this.setState({newTaskLabel: null});
   }
-}
+});
