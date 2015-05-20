@@ -15,6 +15,12 @@ defmodule Scrummix.SectionChannel do
     {:reply, {:ok, payload}, socket}
   end
 
+  def handle_in("front_msg", payload, socket) do
+    IO.puts "front_msg: #{inspect payload}"
+    push socket, "back_msg", %{body: "hello from back there"}
+    {:noreply, socket}
+  end
+
   # It is also common to receive messages from the client and
   # broadcast to everyone in the current topic (sections:lobby).
   def handle_in("shout", payload, socket) do

@@ -6,9 +6,12 @@ import SectionStore from '../stores/section';
 
 let socket = new Socket("/ws");
 socket.connect();
-let channel = socket.join("sections:lobby", {})
-channel.receive("ok", chan => console.log("welcome to chat:", chan));
-channel.push("hello there", {body: "something here"});
+let chan = socket.join("sections:lobby", {});
+setTimeout(function () {
+  chan.on("back_msg", function (payload) { console.log("back_msg:", payload); });
+  chan.on("front_msg", function (payload) { console.log("front_msg -->", payload) });
+  chan.push("front_msg", {body: "something here"});
+}, 0);
 
 let Application = React.createClass({
   mixins: [Reflux.connect(SectionStore, 'section')],
