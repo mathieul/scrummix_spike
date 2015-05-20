@@ -10,6 +10,9 @@ defmodule Scrummix.SectionView do
   end
 
   def render("section.json", %{section: section}) do
+    unless Ecto.Association.loaded?(section.tasks) do
+      section = section |> Scrummix.Repo.preload(:tasks)
+    end
     %{
       id: section.id,
       label: section.label,
