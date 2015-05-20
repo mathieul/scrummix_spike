@@ -1,20 +1,15 @@
 import {Socket} from "phoenix";
 import SectionEditor from '../components/section-editor';
-import SectionStore from '../stores/section';
+import sectionStore from '../stores/section';
 /* global React */
 /* global Reflux */
 
 let socket = new Socket("/ws");
 socket.connect();
-let chan = socket.join("sections:lobby", {});
-setTimeout(function () {
-  chan.on("back_msg", function (payload) { console.log("back_msg:", payload); });
-  chan.on("front_msg", function (payload) { console.log("front_msg -->", payload) });
-  chan.push("front_msg", {body: "something here"});
-}, 0);
+sectionStore.socket = socket;
 
 let Application = React.createClass({
-  mixins: [Reflux.connect(SectionStore, 'section')],
+  mixins: [Reflux.connect(sectionStore, 'section')],
 
   render() {
     return <SectionEditor section={ this.state.section } />;

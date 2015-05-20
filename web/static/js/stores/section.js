@@ -2,6 +2,8 @@ import ActionTasks from "../actions/tasks";
 /* global Reflux */
 /* global Scrummix */
 
+let _channel = null;
+
 export default Reflux.createStore({
   listenables: [ActionTasks],
 
@@ -11,6 +13,19 @@ export default Reflux.createStore({
 
   getInitialState() {
     return this.section;
+  },
+
+  set socket(socket) {
+    if (_channel) {
+      _channel.disconnect();
+    }
+    _channel = socket.join('sections:store', {});
+
+    setTimeout(function () {
+      _channel.on("ping", function (payload) { console.log("ping -->", payload) });
+      _channel.on("front_msg", function (payload) { console.log("front_msg -->", payload) });
+      _channel.push("front_msg", {body: "testing push from front-end"});
+    }, 0);
   },
 
   onAddTask(label) {
