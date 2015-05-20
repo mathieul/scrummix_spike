@@ -21,8 +21,8 @@
       <%= render Scrummix.SharedView, "bottom_bar.html" %>
     </div>
 
-    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
     <script src="<%= static_path(@conn, "/js/vendor.js") %>"></script>
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
     <script>require("web/static/js/app")</script>
     <%= render_dynamic_content(@conn, "post_body", %{data: @data}) %>
   </body>
