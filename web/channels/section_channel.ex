@@ -16,14 +16,16 @@ defmodule Scrummix.SectionChannel do
   end
 
   def handle_in("add_task", payload, socket) do
-    changeset = Task.changeset(%Task{}, payload)
+    changeset = Task.changeset(%Task{}, payload["task"])
 
     if changeset.valid? do
       task = Repo.insert(changeset)
       serialized = Phoenix.View.render(Scrummix.TaskView, "show.json", %{task: task})
+      serialized = Map.put(serialized, :ref, payload["ref"])
       {:reply, {:ok, serialized}, socket}
     else
       serialized = Phoenix.View.render(Scrummix.ChangesetView, "error.json", changeset: changeset)
+      serialized = Map.put(serialized, :ref, payload["ref"])
       {:reply, {:error, serialized}, socket}
     end
   end

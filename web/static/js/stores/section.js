@@ -56,12 +56,19 @@ export default Reflux.createStore({
     console.log(`TODO>>> should send request to add task "${label}" to section #${section.id} (this = ${this.section.id})`);
     if (!_channel) { return; }
 
-    _channel.push("add_task", {label: label, position: 1, section_id: section.id})
-      .receive("ok", payload => {
-        console.log("OK: add_task succeeded: ", payload);
-        this.addTask(payload.task)
+    let task = {
+      label: label,
+      position: 1, // TODO: figure out position in model, pass operation instead (append, prepend, etc...)
+      section_id: section.id
+    };
+    let ref = uuid.v1();
+    this.addTask(task);
+    _channel.push("add_task", {ref: ref, task: task})
+      .receive("ok", payload => console.log("OK: add_task succeeded: ", payload.ref))
+      .receive("error", reason => {
+        console.log("ERROR: add_task failed: ", reason);
+        // TODO: remove the task using ref
       })
-      .receive("error", reason => console.log("ERROR: add_task failed: ", reason))
       .after(PUSH_TIMEOUT, () => console.log("ERROR: add_task timeout!"));
   }
 
