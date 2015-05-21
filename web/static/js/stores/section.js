@@ -62,12 +62,17 @@ export default Reflux.createStore({
       section_id: section.id
     };
     let ref = uuid.v1();
-    this.addTask(task);
+    this.addTask(Object.assign({}, task, {ref: ref}));
     _channel.push("add_task", {ref: ref, task: task})
       .receive("ok", payload => console.log("OK: add_task succeeded: ", payload.ref))
       .receive("error", reason => {
         console.log("ERROR: add_task failed: ", reason);
-        // TODO: remove the task using ref
+        let index = this.section.tasks.findIndex(task => task.ref === ref);
+        if (index !== -1) {
+          this.section.tasks.splice(index, 1);
+          this.trigger(this.section);
+          // TODO: show notification that adding the task failed
+        }
       })
       .after(PUSH_TIMEOUT, () => console.log("ERROR: add_task timeout!"));
   }
