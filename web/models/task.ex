@@ -10,8 +10,8 @@ defmodule Scrummix.Task do
     timestamps
   end
 
-  @required_fields ~w(label position completed_at)
-  @optional_fields ~w()
+  @required_fields ~w(label position section_id)
+  @optional_fields ~w(completed_at)
 
   def changeset(model, params \\ :empty) do
     model

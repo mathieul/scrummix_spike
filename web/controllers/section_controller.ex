@@ -16,12 +16,18 @@ defmodule Scrummix.SectionController do
 
     if changeset.valid? do
       section = Repo.insert(changeset)
+      publish_added(section)
       render(conn, "show.json", section: section)
     else
       conn
       |> put_status(:unprocessable_entity)
       |> render(Scrummix.ChangesetView, "error.json", changeset: changeset)
     end
+  end
+
+  defp publish_added(section) do
+    serialized = Phoenix.View.render(Scrummix.SectionView, "show.json", %{section: section})
+    Scrummix.Endpoint.broadcast! "sections:store", "added", serialized
   end
 
   def show(conn, %{"id" => id}) do

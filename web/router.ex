@@ -28,4 +28,8 @@ defmodule Scrummix.Router do
       get "/edit/:section_id", DailyController, :edit
     end
   end
+
+  socket "/ws", Scrummix do
+    channel "sections:*", SectionChannel
+  end
 end

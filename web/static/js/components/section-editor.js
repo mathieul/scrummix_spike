@@ -29,6 +29,7 @@ export default React.createClass({
                          placeholder="Enter new task"
                          value={ this.state.newTaskLabel }
                          onChange={ this.handleChange }
+                         required
                          autofocus />
                 </div>
                 <div className="two wide column">
@@ -55,7 +56,7 @@ export default React.createClass({
 
   handleSubmit(event) {
     event.preventDefault();
-    ActionTasks.addTask(this.state.newTaskLabel);
+    ActionTasks.addTask(this.state.newTaskLabel, this.props.section);
     this.setState({newTaskLabel: null});
   }
 });
