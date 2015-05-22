@@ -33,7 +33,7 @@ export default React.createClass({
       return tasks.map(function (task) {
         let classCompleted = task.completed_at ? 'task-completed' : '';
         return (
-          <div className="item">
+          <div className="item" key={ `task-${task.id || task.ref}` }>
             <i className="arrow right icon"></i>
             <div className="content">
               <p className={ classCompleted }>{ task.label }</p>
