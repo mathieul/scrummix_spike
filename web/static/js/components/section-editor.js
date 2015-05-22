@@ -1,5 +1,5 @@
 import TaskEditor from "./task-editor";
-import ActionTasks from "../actions/tasks";
+import SectionActions from "../actions/section";
 /* global React */
 
 export default React.createClass({
@@ -14,7 +14,7 @@ export default React.createClass({
     }
 
     let itemNodes = section.tasks.map(function (task) {
-      return <TaskEditor key={ `task-${task.id}` } task={ task } />;
+      return <TaskEditor key={ `task-${task.id || task.ref}` } task={ task } section={ section } />;
     });
 
     return (
@@ -56,7 +56,7 @@ export default React.createClass({
 
   handleSubmit(event) {
     event.preventDefault();
-    ActionTasks.addTask(this.state.newTaskLabel, this.props.section);
+    SectionActions.addTask(this.state.newTaskLabel, this.props.section);
     this.setState({newTaskLabel: null});
   }
 });

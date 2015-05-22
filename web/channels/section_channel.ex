@@ -35,8 +35,17 @@ defmodule Scrummix.SectionChannel do
     {:no_reply, socket}
   end
 
+  def handle_in("del_task", %{"task_id" => task_id}, socket) do
+    if task = Repo.get(Task, task_id) do
+      task = Repo.delete(task)
+      serialized = Phoenix.View.render(Scrummix.TaskView, "show.json", %{task: task})
+      {:reply, {:ok, serialized}, socket}
+    else
+      {:reply, {:ok, %{task: %{id: task_id}}}}
+    end
+  end
+
   def handle_out(event, payload, socket) do
-    IO.puts ">>> handle_out(#{event}, #{inspect payload}) <<<"
     push socket, event, payload
     {:noreply, socket}
   end

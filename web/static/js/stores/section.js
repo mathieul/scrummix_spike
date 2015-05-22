@@ -1,4 +1,4 @@
-import ActionTasks from "../actions/tasks";
+import SectionActions from "../actions/section";
 /* global Reflux */
 /* global Scrummix */
 /* global uuid */
@@ -7,7 +7,7 @@ let _channel = null;
 let PUSH_TIMEOUT = 5 * 1000;
 
 export default Reflux.createStore({
-  listenables: [ActionTasks],
+  listenables: [SectionActions],
 
   init() {
     this.section = Scrummix.section.section;
@@ -47,13 +47,12 @@ export default Reflux.createStore({
     });
   },
 
-  addTask(task) {
-    this.section.tasks.push(task);
-    this.trigger(this.section);
+  addTask(task, section) {
+    section.tasks.push(task);
+    this.trigger(section);
   },
 
   onAddTask(label, section) {
-    console.log(`TODO>>> should send request to add task "${label}" to section #${section.id} (this = ${this.section.id})`);
     if (!_channel) { return; }
 
     let task = {
@@ -62,25 +61,38 @@ export default Reflux.createStore({
       section_id: section.id
     };
     let ref = uuid.v1();
-    this.addTask(Object.assign({}, task, {ref: ref}));
+    this.addTask(Object.assign({}, task, {ref: ref}), section);
     _channel.push("add_task", {ref: ref, task: task})
       .receive("ok", payload => console.log("OK: add_task succeeded: ", payload.ref))
       .receive("error", reason => {
         console.log("ERROR: add_task failed: ", reason);
-        let index = this.section.tasks.findIndex(task => task.ref === ref);
-        if (index !== -1) {
-          this.section.tasks.splice(index, 1);
-          this.trigger(this.section);
+        if (this.delTask(task, section, task => task.ref === ref)) {
           // TODO: show notification that adding the task failed
         }
       })
       .after(PUSH_TIMEOUT, () => console.log("ERROR: add_task timeout!"));
+  },
+
+  delTask(target, section, filterFunc) {
+    let index = section.tasks.findIndex(filterFunc);
+    let deleted = false;
+
+    if (index !== -1) {
+      section.tasks.splice(index, 1);
+      this.trigger(section);
+      deleted = true;
+    }
+
+    return deleted;
+  },
+
+  onDelTask(target, section) {
+    if (!_channel) { return; }
+
+    this.delTask(target, section, task => task.id === target.id);
+    _channel.push("del_task", {task_id: target.id})
+      .receive("ok", _payload => console.log("OK: del_task succeeded"))
+      .receive("error", reason => console.log("ERROR: del_task failed: ", reason))
+      .after(PUSH_TIMEOUT, () => console.log("ERROR: del_task timeout!"));
   }
-
-  // listenToChannel(channel) {
-  //   channel.on("front_msg", function (payload) { console.log("front_msg -->", payload) });
-  //   channel.push("front_msg", {body: "testing push from front-end"});
-
-  //   channel.on("broad_msg", function (payload) { console.log("broad_msg -->", payload) });
-  // },
 });

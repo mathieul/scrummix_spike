@@ -1,3 +1,4 @@
+import SectionActions from "../actions/section";
 /* global React */
 
 export default React.createClass({
@@ -19,7 +20,7 @@ export default React.createClass({
                 </div>
               </div>
               <div className="two wide column">
-                <button className="circular red ui tiny icon button" e-click="remove_task">
+                <button className="circular red ui tiny icon button" onClick={ this.handleClick }>
                   <i className="icon remove"></i>
                 </button>
               </div>
@@ -35,5 +36,11 @@ export default React.createClass({
     if (checkboxNode) {
       jQuery(checkboxNode).checkbox();
     }
+  },
+
+  handleClick(event) {
+    event.preventDefault();
+    let {task, section} = this.props;
+    SectionActions.delTask(task, section);
   }
 });
