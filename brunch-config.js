@@ -3,7 +3,21 @@ exports.config = {
     javascripts: {
       joinTo: {
         'js/app.js':    /^web\/static/,
-        'js/vendor.js': /^(bower_components|vendor)/
+        'js/vendor.js': [
+          'bower_components/jquery/dist/jquery.js',
+          'bower_components/babel-polyfill/browser-polyfill.js',
+          'bower_components/node-uuid/uuid.js',
+          'bower_components/react/react-with-addons.js',
+          'bower_components/reflux/dist/reflux.js',
+          'bower_components/semantic-ui/dist/semantic.js'
+        ],
+        'js/test.js': /^test\/static/,
+        'js/test-vendor.js': [
+          'bower_components/mocha/mocha.js',
+          'bower_components/chai/chai.js',
+          'bower_components/sinon/lib/sinon.js',
+          'bower_components/sinon-chai/lib/sinon-chai.js'
+        ]
       }
     },
     stylesheets: {
@@ -28,7 +42,7 @@ exports.config = {
   // Configure your plugins
   plugins: {
     babel: {
-      ignore: [/^(web\/static\/vendor)/],
+      ignore: [/^(web\/static\/vendor|bower_components)/],
       resolveModuleSource: function (source, filename) {
         return source;
       }//,

@@ -6,11 +6,21 @@
     "react": "~0.13.3",
     "reflux": "~0.2.7",
     "babel-polyfill": "~0.0.1",
-    "node-uuid": "~1.4.3"
+    "node-uuid": "~1.4.3",
+    "chai": "~2.3.0",
+    "mocha": "~2.2.5",
+    "sinon": "~1.14.1",
+    "sinon-chai": "~2.7.0"
   },
   "overrides": {
     "react": {
       "main": "react-with-addons.js"
+    },
+    "sinon": {
+      "main": "lib/sinon.js"
+    },
+    "sinon-chai": {
+      "main": "lib/sinon-chai.js"
     }
   }
 }
