@@ -1,5 +1,5 @@
 import {Socket} from "phoenix";
-import SectionEditor from '../components/section-editor';
+import SectionEditor from '../components/section-editor.jsx';
 import sectionStore from '../stores/section';
 /* global React */
 /* global Reflux */

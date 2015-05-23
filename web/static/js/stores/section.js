@@ -17,6 +17,10 @@ export default Reflux.createStore({
     return this.section;
   },
 
+  get socket() {
+    return null;
+  },
+
   set socket(socket) {
     if (_channel) {
       _channel.disconnect();

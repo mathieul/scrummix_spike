@@ -45,12 +45,14 @@ exports.config = {
       ignore: [/^(web\/static\/vendor|bower_components)/],
       resolveModuleSource: function (source, filename) {
         return source;
-      }//,
-      // jshint: {
-      //   options: {
-      //     esnext: true
-      //   }
-      // }
+      }
+    },
+    jshint: {
+      pattern: /^web\/static\/.*[^j][^s][^x].js$/,
+      options: {
+        esnext: true
+      },
+      warnOnly: true
     }
   }
 };

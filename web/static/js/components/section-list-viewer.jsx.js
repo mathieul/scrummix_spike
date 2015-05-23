@@ -1,4 +1,4 @@
-import SectionItemViewer from './section-item-viewer';
+import SectionItemViewer from './section-item-viewer.jsx';
 /* global React */
 
 export default React.createClass({

@@ -1,7 +1,5 @@
 describe('Application', function () {
-  describe('#first', function () {
-    it('blah', function () {
-      expect("forty" + " " + "two").to.be.equal('forty two');
-    });
+  it.skip('is pending', function () {
+    expect("TODO").to.be.equal("NOT YET");
   });
 });

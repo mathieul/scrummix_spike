@@ -1,4 +1,4 @@
-import TaskEditor from "./task-editor";
+import TaskEditor from "./task-editor.jsx";
 import SectionActions from "../actions/section";
 /* global React */
 

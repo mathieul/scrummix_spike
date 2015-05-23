@@ -1,4 +1,4 @@
-import SectionListViewer from '../components/section-list-viewer';
+import SectionListViewer from '../components/section-list-viewer.jsx';
 /* global React */
 
 class Application extends React.Component {
