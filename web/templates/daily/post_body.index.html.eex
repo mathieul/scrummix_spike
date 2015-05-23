@@ -2,5 +2,5 @@
   window.Scrummix = {
     sections: <%= {:safe, @data.sections_json} %>
   };
-  require("web/static/js/apps/daily-index.jsx");
+  require("scrummix/apps/daily-index.jsx");
 </script>

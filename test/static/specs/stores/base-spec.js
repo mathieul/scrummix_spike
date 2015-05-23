@@ -1,4 +1,4 @@
-import Base from 'app/stores/base';
+import Base from 'scrummix/stores/base';
 
 describe("stores/base", function () {
   describe(".createStore", function () {
@@ -6,7 +6,5 @@ describe("stores/base", function () {
       let store = Base.createStore({});
       expect(typeof store.listen).to.be.equal('function');
     });
-
-    it("")
   });
 });

@@ -1,1 +1,1 @@
-<script>require("web/static/js/apps/example.jsx");</script>
+<script>require("scrummix/apps/example.jsx");</script>

@@ -42,7 +42,7 @@ exports.config = {
   modules: {
     nameCleaner: function (path) {
       if (path.indexOf('web/static/js') === 0) {
-        return path.replace(/^web\/static\/js/, 'app');
+        return path.replace(/^web\/static\/js/, 'scrummix');
       } else if (path.indexOf('test/static/specs') === 0) {
         return path.replace(/^test\/static\/specs/, 'test');
       } else {
