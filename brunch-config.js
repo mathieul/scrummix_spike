@@ -39,6 +39,18 @@ exports.config = {
     public: "priv/static"
   },
 
+  modules: {
+    nameCleaner: function (path) {
+      if (path.indexOf('web/static/js') === 0) {
+        return path.replace(/^web\/static\/js/, 'app');
+      } else if (path.indexOf('test/static/specs') === 0) {
+        return path.replace(/^test\/static\/specs/, 'test');
+      } else {
+        return path;
+      }
+    }
+  },
+
   // Configure your plugins
   plugins: {
     babel: {
