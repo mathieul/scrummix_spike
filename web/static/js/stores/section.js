@@ -29,7 +29,7 @@ export default Reflux.createStore({
     _channel = socket.chan("sections:store", {token: "todo-channel-token"});
     _channel
       .join()
-      .receive("ok", ({messages}) => this.listenToChannel(_channel))
+      .receive("ok", () => this.listenToChannel(_channel))
       .receive("error", chan => {
         _channel = null;
         console.log("TODO>>> CHANNEL ERROR --> ", chan);

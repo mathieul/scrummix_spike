@@ -18,7 +18,26 @@
       "main": "react-with-addons.js"
     },
     "sinon": {
-      "main": "lib/sinon.js"
+      "main": [
+        "lib/sinon.js",
+        "lib/sinon/util/core.js",
+        "lib/sinon/extend.js",
+        "lib/sinon/typeOf.js",
+        "lib/sinon/times_in_words.js",
+        "lib/sinon/spy.js",
+        "lib/sinon/call.js",
+        "lib/sinon/behavior.js",
+        "lib/sinon/stub.js",
+        "lib/sinon/mock.js",
+        "lib/sinon/collection.js",
+        "lib/sinon/assert.js",
+        "lib/sinon/sandbox.js",
+        "lib/sinon/test.js",
+        "lib/sinon/test_case.js",
+        "lib/sinon/match.js",
+        "lib/sinon/format.js",
+        "lib/sinon/log_error.js"
+      ]
     },
     "sinon-chai": {
       "main": "lib/sinon-chai.js"
