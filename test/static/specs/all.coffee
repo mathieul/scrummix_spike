@@ -2,4 +2,4 @@
 
 require './support/publisher-helper'
 
-require './stores/base-spec'
+require './stores/store-channel-connector-spec'
