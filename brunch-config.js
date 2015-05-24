@@ -7,6 +7,7 @@ exports.config = {
           'bower_components/jquery/dist/jquery.js',
           'bower_components/babel-polyfill/browser-polyfill.js',
           'bower_components/node-uuid/uuid.js',
+          'bower_components/immutable/dist/immutable.js',
           'bower_components/react/react-with-addons.js',
           'bower_components/reflux/dist/reflux.js',
           'bower_components/semantic-ui/dist/semantic.js'
