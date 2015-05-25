@@ -54,8 +54,11 @@ describe "stores/store-channel-connector", ->
     it "sends an add request through the channel", ->
       pushSpy = sinon.spy(socket.channels['things:store'], 'push')
       item = subject.addItem({name: "hello"})
-      expect(pushSpy).to.have.been.calledWith 'add_item',
-        ref: item.id
-        attributes:
-          name: "hello"
+      matcher = sinon.match({ref: item.id, attributes: {name: "hello"}})
+      expect(pushSpy).to.have.been.calledWithExactly('add', matcher)
 
+    context "the add request succeeds", ->
+      it "is pending"
+
+    context "the add request fails", ->
+      it "is pending"
