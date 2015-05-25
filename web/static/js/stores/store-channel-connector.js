@@ -33,9 +33,9 @@ function connectChannelMixin(collectionName, modelType) {
       _channel = socket.chan(`${collectionName}:store`, {});
       _channel
         .join()
-        .receive("ok", () => console.log("setup channel listeners"))
-        .receive("error", () => binding.channel = null)
-        .receive("ignore", () => binding.channel = null);
+        .receive("ok", () => this._listenForItemEvents())
+        .receive("error", () => _channel = null)
+        .receive("ignore", () => _channel = null);
     },
 
     pushPayload(payload) {
@@ -45,6 +45,7 @@ function connectChannelMixin(collectionName, modelType) {
         this.collection = items.reduce(function(map, attributes) {
           return map.set(attributes.id, makeItem(attributes));
         }, this.collection);
+        this.trigger(this.collection);
       }
     },
 
@@ -52,6 +53,7 @@ function connectChannelMixin(collectionName, modelType) {
       assertChannelConnected('addItem');
       let item = makeItem(attributes, {id: uuid.v1()});
       this.collection = this.collection.set(item.id, item);
+      this.trigger(this.collection);
       this._executeOperation('add', item);
       return item;
     },
@@ -65,32 +67,43 @@ function connectChannelMixin(collectionName, modelType) {
     },
 
     _processEvent(type, payload) {
-      let ref = payload.ref, attributes = payload[_modelName];
-
       switch (type) {
         case 'add':
-          this._itemAdded(ref, attributes);
+          this._itemAdded(payload);
           break;
         case 'del':
-          this._itemDeleted(ref);
+          this._itemDeleted(payload);
           break;
       }
     },
 
-    _itemAdded(ref, attributes) {
-      let item = makeItem(attributes);
+    _itemAdded(payload) {
+      let ref = payload.ref;
+      let item = makeItem(payload[_modelName]);
+
       if (ref) {
         this.collection = this.collection.remove(ref);
         this.pending = this.pending.remove(ref);
       }
       this.collection = this.collection.set(item.id, item);
+      this.trigger(this.collection);
     },
 
-    _itemDeleted(id) {
+    _itemDeleted(payload) {
+      let id = payload.ref || payload[_modelName].id;
+
       if (id) {
         this.collection = this.collection.remove(id);
         this.pending = this.pending.remove(id);
       }
+      this.trigger(this.collection);
+    },
+
+    _listenForItemEvents() {
+      assertChannelConnected('_listenForItemEvents');
+      _channel
+        .on('added', payload => this._itemAdded(payload))
+        .on('deleted', payload => this._itemDeleted(payload));
     }
   };
 }

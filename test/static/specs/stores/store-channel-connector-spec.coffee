@@ -1,6 +1,9 @@
 Connector = require 'scrummix/stores/store-channel-connector'
 {Socket} = require 'test/support/fake-phoenix'
 
+class FakeStore
+  trigger: ->
+
 describe "stores/store-channel-connector", ->
   socket = null
   subject = null
@@ -8,7 +11,8 @@ describe "stores/store-channel-connector", ->
 
   beforeEach ->
     socket = new Socket()
-    subject = Object.assign((->), Connector.connectChannelMixin('things', Thing))
+    mixin = Connector.connectChannelMixin('things', Thing)
+    subject = Object.assign(new FakeStore, mixin)
     subject.init()
 
   describe "connectChannelMixin()", ->
@@ -35,6 +39,11 @@ describe "stores/store-channel-connector", ->
         subject.pushPayload({things: [{id: 42, name: "allo"}]})
         expect(subject.collection.first().constructor).to.equal Thing
 
+      it "triggers a store change", ->
+        triggerStub = sinon.stub(subject, 'trigger')
+        subject.pushPayload({things: [{id: 42, name: "allo"}]})
+        expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
+
   describe "add an item", ->
     beforeEach -> subject.setSocket(socket)
 
@@ -43,6 +52,11 @@ describe "stores/store-channel-connector", ->
       expect(subject.collection.first()).to.equal item
       expect(item.get('id')).to.not.be.empty
       expect(item.get('name')).to.equal "hello"
+
+    it "triggers a store change", ->
+      triggerStub = sinon.stub(subject, 'trigger')
+      subject.addItem({name: "hello"})
+      expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
 
     it "inserts a pending operation", ->
       item = subject.addItem({name: "hello"})
@@ -68,6 +82,13 @@ describe "stores/store-channel-connector", ->
         expect(existing.name).to.equal "hello"
         expect(subject.pending.isEmpty()).to.be.true
 
+      it "triggers a store change", ->
+        item = subject.addItem({name: "hello"})
+        triggerStub = sinon.stub(subject, 'trigger')
+        push = socket.channels['things:store'].pushes.add
+        push.RECEIVE('ok', {ref: item.id, thing: {id: 42, name: "hello"}})
+        expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
+
     context "the add request fails", ->
       it "removes the item from the collection", ->
         item = subject.addItem({name: "hello"})
@@ -76,3 +97,28 @@ describe "stores/store-channel-connector", ->
         expect(subject.collection.isEmpty()).to.be.true
         expect(subject.pending.isEmpty()).to.be.true
 
+      it "triggers a store change", ->
+        item = subject.addItem({name: "hello"})
+        triggerStub = sinon.stub(subject, 'trigger')
+        push = socket.channels['things:store'].pushes.add
+        push.RECEIVE('error', {ref: item.id, reason: "adding item failed"})
+        expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
+
+  describe "an item was added", ->
+    channel = null
+
+    beforeEach ->
+      subject.setSocket(socket)
+      channel = socket.channels['things:store']
+
+    it "adds the item to the collection", ->
+      channel.RECEIVE('added', {ref: 'whatever', thing: {id: 11, name: "eleven"}})
+      expect(subject.collection.size).to.equal 1
+      item = subject.collection.first()
+      expect(item.get('id')).to.equal 11
+      expect(item.get('name')).to.equal "eleven"
+
+    it "triggers a store change", ->
+      triggerStub = sinon.stub(subject, 'trigger')
+      channel.RECEIVE('added', {ref: 'whatever', thing: {id: 11, name: "eleven"}})
+      expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
