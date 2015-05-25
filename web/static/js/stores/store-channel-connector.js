@@ -1,6 +1,8 @@
 /* global Immutable */
 /* global uuid */
 
+let Operation = Immutable.Record({type: null, id: null});
+
 function setSocketFactory(binding, name) {
   return function(socket) {
     if (binding.channel) {
@@ -20,6 +22,7 @@ function initFactory(binding) {
   return function () {
     binding.channel = null;
     binding.collection = Immutable.Map();
+    binding.pending= Immutable.Map();
   };
 }
 
@@ -42,9 +45,12 @@ function makeItem(binding, attributes) {
 
 function addItemFactory(binding) {
   return function (attributes) {
-    attributes = Object.assign({}, {id: uuid.v1()}, attributes);
+    let id = uuid.v1()
+    attributes = Object.assign({}, {id}, attributes);
     let item = new binding.modelType(attributes);
     binding.collection = binding.collection.set(item.transactionId, item);
+    let operation = new Operation({type: 'add', id: id});
+    binding.pending = binding.pending.set(id, operation);
     return item;
   };
 }
@@ -56,6 +62,7 @@ export default {
     return {
       init:        initFactory(binding),
       collection:  function () { return binding.collection; },
+      pending:     function () { return binding.pending; },
       setSocket:   setSocketFactory(binding, `${collectionName}:store`),
       pushPayload: pushPayloadFactory(binding),
       addItem:     addItemFactory(binding)

@@ -55,5 +55,11 @@ describe "stores/store-channel-connector", ->
       expect(item.get('id')).to.not.be.empty
       expect(item.get('name')).to.equal "hello"
 
-    it "inserts a pending operation"
+    it "inserts a pending operation", ->
+      item = subject.addItem({name: "hello"})
+      expect(subject.pending().size).to.equal 1
+      operation = subject.pending().first()
+      expect(operation.get('type')).to.equal 'add'
+      expect(operation.get('id')).to.equal item.get('id')
+
     it "sends an add request through the channel"
