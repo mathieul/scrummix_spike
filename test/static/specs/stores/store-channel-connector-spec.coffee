@@ -58,7 +58,21 @@ describe "stores/store-channel-connector", ->
       expect(pushSpy).to.have.been.calledWithExactly('add', matcher)
 
     context "the add request succeeds", ->
-      it "is pending"
+      it "replaces the item with the latest version", ->
+        item = subject.addItem({name: "hello"})
+        push = socket.channels['things:store'].pushes.add
+        push.RECEIVE('ok', {ref: item.id, thing: {id: 42, name: "hello"}})
+        expect(subject.collection.size).to.equal 1
+        existing = subject.collection.first()
+        expect(existing.id).to.equal 42
+        expect(existing.name).to.equal "hello"
+        expect(subject.pending.isEmpty()).to.be.true
 
     context "the add request fails", ->
-      it "is pending"
+      it "removes the item from the collection", ->
+        item = subject.addItem({name: "hello"})
+        push = socket.channels['things:store'].pushes.add
+        push.RECEIVE('error', {ref: item.id, reason: "adding item failed"})
+        expect(subject.collection.isEmpty()).to.be.true
+        expect(subject.pending.isEmpty()).to.be.true
+
