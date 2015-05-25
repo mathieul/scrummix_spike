@@ -8,7 +8,8 @@ let socket = new Socket("/ws", {params: {user_id: "user-todo"}});
 socket.connect();
 socket.onError(reason => console.log("TODO>>> SOCKET ERROR ---> ", reason));
 socket.onClose(reason => console.log("TODO>>> SOCKET CLOSE ---> ", reason));
-sectionStore.socket = socket;
+sectionStore.setSocket(socket);
+sectionStore.pushPayload(Scrummix.section.section);
 
 let Application = React.createClass({
   mixins: [Reflux.connect(sectionStore, 'section')],
