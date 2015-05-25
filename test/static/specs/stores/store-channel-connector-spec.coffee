@@ -110,9 +110,10 @@ describe "stores/store-channel-connector", ->
     beforeEach ->
       subject.setSocket(socket)
       channel = socket.channels['things:store']
+      channel.RECEIVE('ok')
 
     it "adds the item to the collection", ->
-      channel.RECEIVE('added', {ref: 'whatever', thing: {id: 11, name: "eleven"}})
+      channel.ON('added', {ref: 'whatever', thing: {id: 11, name: "eleven"}})
       expect(subject.collection.size).to.equal 1
       item = subject.collection.first()
       expect(item.get('id')).to.equal 11
@@ -120,5 +121,25 @@ describe "stores/store-channel-connector", ->
 
     it "triggers a store change", ->
       triggerStub = sinon.stub(subject, 'trigger')
-      channel.RECEIVE('added', {ref: 'whatever', thing: {id: 11, name: "eleven"}})
+      channel.ON('added', {ref: 'whatever', thing: {id: 11, name: "eleven"}})
       expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
+
+  describe "an item was deleted", ->
+    channel = null
+    item    = null
+
+    beforeEach ->
+      subject.setSocket(socket)
+      channel = socket.channels['things:store']
+      channel.RECEIVE('ok')
+      subject.pushPayload({things: [{id: 42, name: "delete me"}]})
+
+    it "adds the item to the collection", ->
+      channel.ON('deleted', {ref: 'whatever', thing: {id: 42}})
+      expect(subject.collection.isEmpty()).to.be.true
+
+    it "triggers a store change", ->
+      triggerStub = sinon.stub(subject, 'trigger')
+      channel.ON('deleted', {ref: 'whatever', thing: {id: 42}})
+      expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
+

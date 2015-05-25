@@ -14,7 +14,7 @@ class Push
       cb(response)
 
 class Channel
-  constructor: ->
+  constructor: (@name)->
     @callbacks = {}
     @events    = {}
     @pushes    = {}
@@ -49,7 +49,7 @@ class Socket
   onClose: -> this
 
   chan: (name) ->
-    @channels[name] = new Channel
+    @channels[name] = new Channel(name)
 
 module.exports =
   Socket:   Socket

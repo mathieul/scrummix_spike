@@ -90,13 +90,15 @@ function connectChannelMixin(collectionName, modelType) {
     },
 
     _itemDeleted(payload) {
-      let id = payload.ref || payload[_modelName].id;
+      let attributes = payload[_modelName],
+          id = attributes && attributes.id;
 
+      id = id || payload.ref;;
       if (id) {
         this.collection = this.collection.remove(id);
         this.pending = this.pending.remove(id);
+        this.trigger(this.collection);
       }
-      this.trigger(this.collection);
     },
 
     _listenForItemEvents() {
