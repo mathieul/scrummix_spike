@@ -6,6 +6,7 @@ describe "stores/store-channel-connector", ->
   socket = null
   channel = null
   chanStub = null
+  Thing = Immutable.Record({id: null, name: null})
 
   beforeEach ->
     socket = sinon.createStubInstance(Socket)
@@ -15,7 +16,7 @@ describe "stores/store-channel-connector", ->
     subject = null
 
     beforeEach ->
-      subject = Object.assign((->), Connector.connectChannelMixin('things'))
+      subject = Object.assign((->), Connector.connectChannelMixin('things', Thing))
       subject.init()
 
     it "has an empty collection by default", ->
@@ -33,5 +34,11 @@ describe "stores/store-channel-connector", ->
 
       it "initializes the collection if present in payload", ->
         subject.pushPayload({stuff: [], things: [{id: 42, name: "allo"}, {id: 33, name: "la terre"}]})
-        expect(subject.collection().size).to.equal 2
-        expect(subject.collection().map((e) -> e.name).toJSON()).to.have.members ["allo", "la terre"]
+        collection = subject.collection()
+        expect(collection.size).to.equal 2
+        expect(collection.map((v) -> v.name).toArray()).to.have.members ["allo", "la terre"]
+
+      it "instantiates a model instance for each item of the collection", ->
+        subject.pushPayload({things: [{id: 42, name: "allo"}]})
+        expect(subject.collection().first().constructor).to.equal Thing
+
