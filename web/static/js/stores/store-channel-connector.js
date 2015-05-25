@@ -1,4 +1,8 @@
 /* global Immutable */
+/* global uuid */
+
+function isTrue()  { return true; }
+function isFalse() { return false; }
 
 function setSocketFactory(binding, name) {
   return function(socket) {
@@ -25,13 +29,28 @@ function initFactory(binding) {
 function pushPayloadFactory(binding) {
   return function (payload) {
     let items = payload[binding.collectionName];
-    let type = binding.modelType;
 
     if (items) {
-      binding.collection = items.reduce(function(map, item) {
-        return map.set(item.id, new type(item));
+      binding.collection = items.reduce(function(map, attributes) {
+        return map.set(attributes.id, makeItem(binding, attributes));
       }, Immutable.Map());
     }
+  };
+}
+
+function makeItem(binding, attributes) {
+  let item = new binding.modelType(attributes);
+  item.isDirty = isFalse;
+  return item;
+}
+
+function addItemFactory(binding) {
+  return function (attributes) {
+    let item = new binding.modelType(attributes);
+    item.isDirty = isTrue;
+    item.transactionId = uuid.v1();
+    binding.collection = binding.collection.set(item.transactionId, item);
+    return item;
   };
 }
 
@@ -43,7 +62,8 @@ export default {
       init:        initFactory(binding),
       collection:  function () { return binding.collection; },
       setSocket:   setSocketFactory(binding, `${collectionName}:store`),
-      pushPayload: pushPayloadFactory(binding)
+      pushPayload: pushPayloadFactory(binding),
+      addItem:     addItemFactory(binding)
     };
   }
 };
