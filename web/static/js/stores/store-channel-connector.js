@@ -54,16 +54,31 @@ function connectChannelMixin(collectionName, modelType) {
       let item = makeItem(attributes, {id: uuid.v1()});
       this.collection = this.collection.set(item.id, item);
       this.trigger(this.collection);
-      this._executeOperation('add', item);
+      this._executeOperation('add', item,
+          payload => this._processEvent('del', payload));
       return item;
     },
 
-    _executeOperation(type, item) {
+    delItem(id) {
+      assertChannelConnected('addItem');
+      id = typeof id === 'object' ? id.id : id;
+      let item = this.collection.get(id);
+      if (item) {
+        this.collection = this.collection.remove(id);
+        this.trigger(this.collection);
+        this._executeOperation('del', item, payload => {
+          this._processEvent('add', {ref: item.id, [_modelName]: item.toJSON()});
+        });
+      }
+      return item;
+    },
+
+    _executeOperation(type, item, onError = function () {}) {
       let operation = new Operation({type, id: item.id});
       this.pending = this.pending.set(item.id, operation);
-      _channel.push(type, {ref: item.id, attributes: item.toJS()})
+      _channel.push(type, {ref: item.id, attributes: item.toJSON()})
         .receive('ok', payload => this._processEvent(type, payload))
-        .receive('error', payload => this._processEvent('del', payload))
+        .receive('error', onError);
     },
 
     _processEvent(type, payload) {
@@ -93,7 +108,7 @@ function connectChannelMixin(collectionName, modelType) {
       let attributes = payload[_modelName],
           id = attributes && attributes.id;
 
-      id = id || payload.ref;;
+      id = id || payload.ref;
       if (id) {
         this.collection = this.collection.remove(id);
         this.pending = this.pending.remove(id);

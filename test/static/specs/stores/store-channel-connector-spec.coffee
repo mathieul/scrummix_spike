@@ -124,6 +124,66 @@ describe "stores/store-channel-connector", ->
       channel.ON('added', {ref: 'whatever', thing: {id: 11, name: "eleven"}})
       expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
 
+  describe "delete an item", ->
+    beforeEach ->
+      subject.setSocket(socket)
+      subject.pushPayload({things: [{id: 42, name: "delete me"}]})
+
+    it "deletes an item from the collection", ->
+      subject.delItem({id: 42})
+      expect(subject.collection.isEmpty()).to.be.true
+
+    it "triggers a store change", ->
+      triggerStub = sinon.stub(subject, 'trigger')
+      subject.delItem({id: 42})
+      expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
+
+    it "inserts a pending operation", ->
+      subject.delItem({id: 42})
+      expect(subject.pending.size).to.equal 1
+      operation = subject.pending.first()
+      expect(operation.get('type')).to.equal 'del'
+      expect(operation.get('id')).to.equal 42
+
+    it "sends a del request through the channel", ->
+      pushSpy = sinon.spy(socket.channels['things:store'], 'push')
+      subject.delItem({id: 42})
+      matcher = sinon.match({attributes: {id: 42}})
+      expect(pushSpy).to.have.been.calledWithExactly('del', matcher)
+
+    context "the del request succeeds", ->
+      it "replaces the item with the latest version", ->
+        subject.delItem({id: 42})
+        push = socket.channels['things:store'].pushes.del
+        push.RECEIVE('ok', {ref: 'meh', thing: {id: 42}})
+        expect(subject.collection.isEmpty()).to.be.true
+        expect(subject.pending.isEmpty()).to.be.true
+
+      it "triggers a store change", ->
+        subject.delItem({id: 42})
+        triggerStub = sinon.stub(subject, 'trigger')
+        push = socket.channels['things:store'].pushes.del
+        push.RECEIVE('ok', {ref: 'meh', thing: {id: 42}})
+        expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
+
+    context "the del request fails", ->
+      it "puts back the item in the collection", ->
+        subject.delItem({id: 42})
+        push = socket.channels['things:store'].pushes.del
+        push.RECEIVE('error', {reason: "deleting item failed"})
+        expect(subject.collection.size).to.equal 1
+        existing = subject.collection.first()
+        expect(existing.id).to.equal 42
+        expect(existing.name).to.equal "delete me"
+        expect(subject.pending.isEmpty()).to.be.true
+
+      it "triggers a store change", ->
+        subject.delItem({id: 42})
+        triggerStub = sinon.stub(subject, 'trigger')
+        push = socket.channels['things:store'].pushes.del
+        push.RECEIVE('error', {reason: "deleting item failed"})
+        expect(triggerStub).to.have.been.calledWithExactly(subject.collection)
+
   describe "an item was deleted", ->
     channel = null
     item    = null
