@@ -1,9 +1,6 @@
 /* global Immutable */
 /* global uuid */
 
-function isTrue()  { return true; }
-function isFalse() { return false; }
-
 function setSocketFactory(binding, name) {
   return function(socket) {
     if (binding.channel) {
@@ -40,15 +37,13 @@ function pushPayloadFactory(binding) {
 
 function makeItem(binding, attributes) {
   let item = new binding.modelType(attributes);
-  item.isDirty = isFalse;
   return item;
 }
 
 function addItemFactory(binding) {
   return function (attributes) {
+    attributes = Object.assign({}, {id: uuid.v1()}, attributes);
     let item = new binding.modelType(attributes);
-    item.isDirty = isTrue;
-    item.transactionId = uuid.v1();
     binding.collection = binding.collection.set(item.transactionId, item);
     return item;
   };

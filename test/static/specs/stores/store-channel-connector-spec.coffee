@@ -42,10 +42,6 @@ describe "stores/store-channel-connector", ->
         subject.pushPayload({things: [{id: 42, name: "allo"}]})
         expect(subject.collection().first().constructor).to.equal Thing
 
-      it "marks items as clean", ->
-        subject.pushPayload({things: [{id: 42, name: "allo"}]})
-        expect(subject.collection().first().isDirty()).to.be.false
-
   describe "add an item", ->
     subject = null
 
@@ -53,11 +49,11 @@ describe "stores/store-channel-connector", ->
       subject = Object.assign((->), Connector.connectChannelMixin('things', Thing))
       subject.init()
 
-    it "inserts a dirty item in the collection with a transaction id", ->
+    it "inserts an item in the collection", ->
       item = subject.addItem({name: "hello"})
       expect(subject.collection().first()).to.equal item
+      expect(item.get('id')).to.not.be.empty
       expect(item.get('name')).to.equal "hello"
-      expect(item.isDirty()).to.be.true
-      expect(item.transactionId).to.not.be.empty
 
+    it "inserts a pending operation"
     it "sends an add request through the channel"
