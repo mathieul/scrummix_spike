@@ -14,8 +14,7 @@ class LocationStore {
       setFavorites:          LocationActions.FAVORITE_LOCATION
     });
     this.exportPublicMethods({
-      getLocation: this.getLocation,
-      hasError:    this.hasError
+      getLocation: this.getLocation
     });
     this.exportAsync(LocationSource);
   }
@@ -65,10 +64,6 @@ class LocationStore {
       }
     }
     return null;
-  }
-
-  hasError() {
-    return !!this.errorMessage;
   }
 }
 

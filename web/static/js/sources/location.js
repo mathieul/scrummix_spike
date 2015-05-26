@@ -17,25 +17,27 @@ let mockData = [
 ];
 
 export default {
-  fetchLocations: {
-    fetch() {
-      return new Promise(function (resolve, reject) {
-        setTimeout(function () {
-          if (true) {
-            resolve(mockData);
-          } else {
-            reject("An error supposidely happened");
-          }
-        }, 250);
-      });
-    },
+  fetchLocations() {
+    return {
+      remote() {
+        return new Promise(function (resolve, reject) {
+          setTimeout(function () {
+            if (true) {
+              resolve(mockData);
+            } else {
+              reject("An error did happen!");
+            }
+          }, 500);
+        });
+      },
 
-    cache() {
-      return false;
-    },
+      local() {
+        return false;
+      },
 
-    success: LocationActions.updateLocations,
-    error:   LocationActions.locationsFailed,
-    loading: LocationActions.fetchLocations
+      success: LocationActions.updateLocations,
+      error:   LocationActions.locationsFailed,
+      loading: LocationActions.fetchLocations
+    };
   }
 };

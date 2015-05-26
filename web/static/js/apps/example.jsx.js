@@ -25,10 +25,10 @@ let AllLocations = React.createClass({
 
   render() {
     if (LocationStore.hasError()) {
-      return <div>Something went wrong: {LocationStore.errorMessage}</div>;
+      return <div>Something went wrong: {this.props.errorMessage}</div>;
     }
 
-    if (this.props.locations.length === 0) {
+    if (LocationStore.isLoading()) {
       return <div>... loading ...</div>;
     }
 
