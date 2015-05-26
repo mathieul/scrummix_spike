@@ -4,9 +4,16 @@ exports.config =
     javascripts:
       joinTo:
         'js/app.js':         /^web\/static/
-        'js/vendor.js':      /^bower_components\/(jquery|babel-polyfill|node-uuid|immutable|inflection|react|reflux|semantic-ui)/
+        'js/vendor.js':      /^bower_components\/(jquery|babel-polyfill|node-uuid|immutable|inflection|react|alt|reflux|semantic-ui)/
         'js/test.js':        /^test\/static\/specs/
         'js/test-vendor.js': /^bower_components\/(mocha|chai|sinon|sinon-chai)/
+      order:
+        before: [
+          /^bower_components\/babel-polyfill\//,
+          /^bower_components\/jquery\//,
+          /^bower_components\/react\//,
+          /^bower_components\/alt\//
+        ]
 
     stylesheets:
       joinTo:

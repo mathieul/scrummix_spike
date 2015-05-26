@@ -1,6 +1,7 @@
 {
   "name": "scrummix",
   "dependencies": {
+    "alt": "~0.17.0",
     "babel-polyfill": "~0.0.1",
     "chai": "~2.3.0",
     "immutable": "~3.7.3",
@@ -9,12 +10,15 @@
     "mocha": "~2.2.5",
     "node-uuid": "~1.4.3",
     "react": "~0.13.3",
-    "reflux": "~0.2.7",
     "semantic-ui": "~1.12.2",
     "sinon": "~1.14.1",
-    "sinon-chai": "~2.7.0"
+    "sinon-chai": "~2.7.0",
+    "reflux": "~0.2.7"
   },
   "overrides": {
+    "alt": {
+      "main": "dist/alt-with-addons.js"
+    },
     "react": {
       "main": "react-with-addons.js"
     },
