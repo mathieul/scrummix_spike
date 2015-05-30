@@ -17,7 +17,8 @@ exports.config =
 
     stylesheets:
       joinTo:
-        'css/app.css': /^(web\/static\/css|bower_components|vendor)/
+        'css/app.css': /^(web\/static\/css|bower_components\/semantic-ui)/,
+        'css/test.css':/^bower_components\/mocha/
 
     templates:
       joinTo: 'js/app.js'
