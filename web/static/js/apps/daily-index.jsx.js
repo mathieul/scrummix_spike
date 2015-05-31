@@ -18,8 +18,7 @@ let Application = React.createClass({
   },
 
   componentDidMount() {
-    SectionStore.fetchSections();
-    TaskStore.fetchTasks();
+    SectionsWithTasksStore.fetch();
   }
 });
 
