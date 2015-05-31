@@ -13,9 +13,9 @@ class TaskStore {
     this.exportAsync(TaskSource);
   }
 
-  handleSetTasks(task) {
+  handleSetTasks(tasks) {
     this.errorMessage = null;
-    this.task = task;
+    this.tasks = tasks;
   }
 
   handleFetchTasksFailed(message) {

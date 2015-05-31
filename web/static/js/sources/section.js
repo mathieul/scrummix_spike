@@ -11,7 +11,6 @@ export default {
           let sectionMap = Scrummix.sections.sections.reduce(function (map, attributes) {
             return map.set(attributes.id, new Section(attributes));
           }, Immutable.Map());
-          console.log('SECTIONS LOADED:', sectionMap);
           resolve(sectionMap);
         }
       });

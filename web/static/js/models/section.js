@@ -4,5 +4,6 @@ export default Immutable.Record({
   id:        null,
   label:     null,
   color:     null,
-  position:  0
+  position:  0,
+  tasks:     null
 });

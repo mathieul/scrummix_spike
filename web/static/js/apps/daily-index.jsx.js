@@ -20,9 +20,6 @@ let Application = React.createClass({
   componentDidMount() {
     SectionStore.fetchSections();
     TaskStore.fetchTasks();
-    SectionActions.fetchSectionsWithTasks();
-    let ss = SectionStore;
-    debugger;
   }
 });
 

@@ -8,10 +8,6 @@ class SectionActions {
   fetchSectionsFailed(message) {
     this.dispatch(message);
   }
-
-  fetchSectionsWithTasks() {
-    this.dispatch();
-  }
 }
 
 export default alt.createActions(SectionActions);

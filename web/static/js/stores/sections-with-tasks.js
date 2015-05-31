@@ -1,23 +1,34 @@
 import alt from '../util/alt';
 import SectionActions from '../actions/section';
 import SectionStore from './section';
+import TaskActions from '../actions/task';
 import TaskStore from './task';
 /* global Immutable */
+
+let _sections = null, _tasks = null;
 
 class SectionsWithTasks {
   constructor() {
     this.sections = Immutable.List();
-    this.bindListeners({
-      handleFetch: SectionActions.FETCH_SECTIONS_WITH_TASKS
-    });
+    SectionStore.listen(state => this.buildSectionList(state));
+    TaskStore.listen(state => this.buildSectionList(state));
   }
 
-  handleFetch() {
-    this.waitFor([SectionStore, TaskStore]);
-    console.log('WAITFOR DONE');
+  buildSectionList(data) {
+    if (data.sections) { _sections = data.sections; }
+    if (data.tasks)    { _tasks = data.tasks; }
 
-    let {sections} = SectionStore.getState();
-    let {tasks}    = TaskStore.getState();
+    if (_sections && _tasks) {
+      this.sections = _sections
+        .sortBy(section => section.position)
+        .toList()
+        .map(function (section) {
+          let sectionTasks = _tasks.filter(task => task.section_id === section.id).toList();
+          console.log(`section #${section.id}: tasks =`, sectionTasks.toArray());
+          return section.set('tasks', sectionTasks);
+        });
+      this.emitChange();
+    }
   }
 }
 
