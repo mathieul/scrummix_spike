@@ -10,6 +10,12 @@ defmodule Scrummix.TaskView do
   end
 
   def render("task.json", %{task: task}) do
-    %{id: task.id, label: task.label, position: task.position, completed_at: task.completed_at}
+    %{
+      id: task.id,
+      label: task.label,
+      position: task.position,
+      completed_at: task.completed_at,
+      section_id: task.section_id
+    }
   end
 end

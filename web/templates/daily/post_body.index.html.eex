@@ -1,6 +1,7 @@
 <script>
   window.Scrummix = {
-    sections: <%= {:safe, @data.sections_json} %>
+    sections: <%= {:safe, @data.sections_json} %>,
+    tasks:    <%= {:safe, @data.tasks_json} %>
   };
   require("scrummix/apps/daily-index.jsx");
 </script>

@@ -1,4 +1,4 @@
-import SectionActions from "../actions/section";
+import SectionActions from "../actions/old-section";
 /* global React */
 
 export default React.createClass({

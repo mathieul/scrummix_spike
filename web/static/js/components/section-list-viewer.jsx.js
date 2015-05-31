@@ -3,7 +3,8 @@ import SectionItemViewer from './section-item-viewer.jsx';
 
 export default React.createClass({
   render() {
-    let itemNodes = this.props.sections.map(function (section) {
+    let sections = this.props.sections.toArray();
+    let itemNodes = sections.map(function (section) {
       return <SectionItemViewer key={`section-${section.id}`} section={section} />;
     });
 
