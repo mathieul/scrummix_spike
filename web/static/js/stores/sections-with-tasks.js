@@ -5,7 +5,7 @@ import TaskActions from '../actions/task';
 import TaskStore from './task';
 /* global Immutable */
 
-let _sections = null, _tasks = null, _filters = {};
+let _sections = null, _tasks = null;
 
 class SectionsWithTasks {
   constructor() {
@@ -18,8 +18,10 @@ class SectionsWithTasks {
   }
 
   fetch(filters = {}) {
-    _filters = filters;
+    SectionStore.setFilter(filters.section);
     SectionStore.fetchSections();
+
+    TaskStore.setFilter(filters.task);
     TaskStore.fetchTasks();
   }
 
@@ -28,21 +30,13 @@ class SectionsWithTasks {
     if (data.tasks)    { _tasks = data.tasks; }
 
     if (_sections && _tasks) {
-      let collection = _sections;
-
-      if (_filters.section) {
-        collection = collection.filter(_filters.section);
-      }
-
-      collection = collection
+      this.sections = _sections
         .sortBy(section => section.position)
         .toList()
         .map(function (section) {
           let sectionTasks = _tasks.filter(task => task.section_id === section.id).toList();
           return section.set('tasks', sectionTasks);
         });
-
-      this.sections = collection;
       this.emitChange();
     }
   }

@@ -13,9 +13,14 @@ class TaskStore {
     this.exportAsync(TaskSource);
   }
 
+  static setFilter(filter) {
+    this._filter = filter;
+  }
+
   handleSetTasks(tasks) {
+    let filter = this.getInstance()._filter;
     this.errorMessage = null;
-    this.tasks = tasks;
+    this.tasks = filter ? tasks.filter(filter) : tasks;
   }
 
   handleFetchTasksFailed(message) {

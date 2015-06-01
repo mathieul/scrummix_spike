@@ -13,9 +13,14 @@ class SectionStore {
     this.exportAsync(SectionSource);
   }
 
+  static setFilter(filter) {
+    this._filter = filter;
+  }
+
   handleSetSections(sections) {
+    let filter = this.getInstance()._filter;
     this.errorMessage = null;
-    this.sections = sections;
+    this.sections = filter ? sections.filter(filter) : sections;
   }
 
   handleFetchSectionsFailed(message) {
