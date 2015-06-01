@@ -1,5 +1,5 @@
 import TaskEditor from "./task-editor.jsx";
-import SectionActions from "../actions/old-section";
+import TaskActions from "../actions/task";
 /* global React */
 
 export default React.createClass({
@@ -8,7 +8,7 @@ export default React.createClass({
   },
 
   render() {
-    let section = this.props.section;
+    let section = this.props.sections.first();
     if (!section) {
       return <div className="empty-section-editor"></div>;
     }
@@ -56,7 +56,7 @@ export default React.createClass({
 
   handleSubmit(event) {
     event.preventDefault();
-    SectionActions.addTask(this.state.newTaskLabel, this.props.section);
+    TaskActions.addTask(this.state.newTaskLabel, this.props.sections.first());
     this.setState({newTaskLabel: null});
   }
 });

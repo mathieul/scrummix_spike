@@ -30,10 +30,11 @@ defmodule Scrummix.DailyController do
     section = Section.find_with_tasks(params["section_id"]) |> Repo.one
 
     conn
-    |> assign(:data, %{section_json: section_json(section)})
+    |> assign(:data, %{
+      section_id:     params["section_id"],
+      sections_json:  sections_json([section]),
+      tasks_json:     tasks_json(section.tasks)
+    })
     |> render("edit.html")
   end
-
-  defp section_json(section),
-    do: render_to_string(SectionView, "show.json", %{section: section})
 end

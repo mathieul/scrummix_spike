@@ -1,6 +1,8 @@
 <script>
   window.Scrummix = {
-    section: <%= {:safe, @data.section_json} %>
+    section_id: <%= @data.section_id %>,
+    sections:   <%= {:safe, @data.sections_json} %>,
+    tasks:      <%= {:safe, @data.tasks_json} %>
   };
   require("scrummix/apps/daily-edit.jsx");
 </script>

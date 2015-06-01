@@ -8,6 +8,14 @@ class TaskActions {
   fetchTasksFailed(message) {
     this.dispatch(message);
   }
+
+  addTask(label, section) {
+    this.dispatch(label, section);
+  }
+
+  delTask(task, section) {
+    this.dispatch(task, section);
+  }
 }
 
 export default alt.createActions(TaskActions);

@@ -1,4 +1,4 @@
-import SectionActions from "../actions/old-section";
+import TaskActions from '../actions/task';
 /* global React */
 
 export default React.createClass({
@@ -41,6 +41,6 @@ export default React.createClass({
   handleClick(event) {
     event.preventDefault();
     let {task, section} = this.props;
-    SectionActions.delTask(task, section);
+    TaskActions.delTask(task, section);
   }
 });
