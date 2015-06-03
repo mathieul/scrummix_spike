@@ -8,7 +8,9 @@ class TaskStore {
     this.tasks = Immutable.Map();
     this.bindListeners({
       handleSetTasks:          TaskActions.SET_TASKS,
-      handleFetchTasksFailed:  TaskActions.FETCH_TASKS_FAILED
+      handleFetchTasksFailed:  TaskActions.FETCH_TASKS_FAILED,
+      handleTaskAdded:         TaskActions.TASK_ADDED,
+      handleTaskDeleted:       TaskActions.TASK_DELETED
     });
     this.exportAsync(TaskSource);
   }
@@ -25,6 +27,23 @@ class TaskStore {
 
   handleFetchTasksFailed(message) {
     this.errorMessage = message;
+  }
+
+  handleTaskAdded(attributes) {
+    let task = new Task(attributes);
+    let filter = this.getInstance()._filter;
+    if (!filter || filter(task)) {
+      this.tasks = this.tasks.set(task.id, task);
+      this.emitChange();
+    }
+  }
+
+  handleTaskDeleted(id) {
+    let task = this.tasks.get(id);
+    if (task) {
+      this.tasks = this.tasks.delete(task.id);
+      this.emitChange();
+    }
   }
 }
 

@@ -31,5 +31,6 @@ defmodule Scrummix.Router do
 
   socket "/ws", Scrummix do
     channel "sections:*", SectionChannel
+    channel "tasks:*", TaskChannel
   end
 end

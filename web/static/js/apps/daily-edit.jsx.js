@@ -1,5 +1,7 @@
 import {Socket} from "phoenix";
 import SectionsWithTasksStore from '../stores/sections-with-tasks';
+import TaskChannelStore from '../stores/task-channel';
+import TaskActions from '../actions/task';
 import SectionEditor from '../components/section-editor.jsx';
 /* global Alt */
 /* global React */
@@ -10,7 +12,8 @@ let socket = new Socket("/ws", {params: {user_id: "user-todo"}});
 socket.connect();
 socket.onError(reason => console.log("TODO>>> SOCKET ERROR ---> ", reason));
 socket.onClose(reason => console.log("TODO>>> SOCKET CLOSE ---> ", reason));
-/* TODO: set socket store */
+
+TaskActions.setSocket(socket);
 
 let Application = React.createClass({
   render() {
