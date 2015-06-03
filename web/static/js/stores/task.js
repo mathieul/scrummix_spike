@@ -30,6 +30,7 @@ class TaskStore {
   }
 
   handleTaskAdded(attributes) {
+    console.log('handleTaskAdded: ', attributes);
     let task = new Task(attributes);
     let filter = this.getInstance()._filter;
     if (!filter || filter(task)) {

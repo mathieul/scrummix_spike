@@ -16,7 +16,8 @@ defmodule Scrummix.TaskChannel do
   end
 
   def handle_in("add", payload, socket) do
-    changeset = Task.changeset(%Task{}, payload["task"])
+    IO.puts "handle_in(add, #{inspect payload}, ...)"
+    changeset = Task.changeset(%Task{}, payload["attributes"])
 
     if changeset.valid? do
       task = Repo.insert(changeset)

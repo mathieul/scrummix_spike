@@ -36,6 +36,27 @@ class ChannelStoreBase {
       .receive("ignore", () => _channel = null);
   }
 
+  addItem(attributes) {
+    assertChannelConnected('addItem');
+    let id = uuid.v1();
+    let itemAttributes = Object.assign({id: uuid.v1()}, attributes);
+    console.log('addItem:', itemAttributes);
+    setTimeout(() => TaskActions.taskAdded(itemAttributes), 0);
+    this.executeOperation('add', itemAttributes, payload => this.processEvent('del', payload));
+  }
+
+  deleteItem(id) {
+    assertChannelConnected('addItem');
+    id = typeof id === 'object' ? id.id : id;
+    if (item) {
+      TaskActions.taskDeleted(id);
+      this._executeOperation('del', item, payload => {
+        this._processEvent('add', {ref: item.id, [this.modelName]: item.toJSON()});
+      });
+    }
+    return item;
+  }
+
   listenForItemEvents() {
     assertChannelConnected('listenForItemEvents');
     _channel.on('added', payload => this.itemAdded(payload));
@@ -43,18 +64,24 @@ class ChannelStoreBase {
   }
 
   itemAdded(payload) {
+    console.log('itemAdded:', payload);
     if (payload.ref) {
-      // TODO: tell task store to remove item(payload.ref)
+      TaskActions.taskDeleted(payload.ref);
       this.pending = this.pending.remove(payload.ref);
     }
-    // TODO: tell task store to add item(payload.id)
+    TaskActions.taskAdded(payload);
   }
 
-  addItem(attributes) {
-    assertChannelConnected('addItem');
-    let id = uuid.v1();
-    // TODO: tell task store to add item(payload.id)
-    this.executeOperation('add', attributes, payload => this.processEvent('del', payload));
+  itemDeleted(payload) {
+    console.log('itemDeleted:', payload);
+    let attributes = payload[this.modelName],
+        id = attributes && attributes.id;
+
+    id = id || payload.ref;
+    if (id) {
+      TaskActions.taskDeleted(id);
+      this.pending = this.pending.remove(id);
+    }
   }
 
   executeOperation(type, attributes, onError = function () {}) {
@@ -97,6 +124,7 @@ class TaskChannelStore extends ChannelStoreBase {
 
   handleDelTask({task, section}) {
     console.log('delTask:', task, section);
+    this.deleteItem({id: task.id});
   }
 }
 

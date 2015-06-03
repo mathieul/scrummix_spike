@@ -25,8 +25,8 @@ class TaskActions {
     this.dispatch({task, section});
   }
 
-  taskDeleted(task) {
-    this.dispatch(task);
+  taskDeleted(id) {
+    this.dispatch(id);
   }
 
 }
