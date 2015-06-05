@@ -1,7 +1,7 @@
 {
   "name": "scrummix",
   "dependencies": {
-    "alt": "~0.16.7",
+    "alt": "~0.16.9",
     "babel-polyfill": "~0.0.1",
     "chai": "~2.3.0",
     "immutable": "~3.7.3",
