@@ -17,14 +17,17 @@ export default React.createClass({
       return <TaskEditor key={ `task-${task.id || task.ref}` } task={ task } section={ section } />;
     });
 
+    let labelClasses = `ui ribbon ${section.color} label`;
+
     return (
       <div className="section-editor">
-        <form className="ui form" onSubmit={ this.handleSubmit } role="form">
-          <h4 className="ui dividing header">{ section.label }</h4>
+        <form className="ui form raised segment" onSubmit={ this.handleSubmit } role="form">
+          <div className={labelClasses}>{ section.label }</div>
           <div className="one field">
             <div className="field">
               <div className="ui grid">
-                <div className="fourteen wide column">
+                <div className="sixteen wide column"></div>
+                <div className="thirteen wide column">
                   <input type="text"
                          placeholder="Enter new task"
                          value={ this.state.newTaskLabel }
@@ -32,7 +35,7 @@ export default React.createClass({
                          required
                          autofocus />
                 </div>
-                <div className="two wide column">
+                <div className="right aligned three wide column">
                   <button type="submit" className="circular blue ui tiny icon button">
                     <i className="icon add"></i>
                   </button>
