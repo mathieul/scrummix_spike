@@ -13,16 +13,16 @@ class TaskActions {
     this.dispatch(message);
   }
 
-  addTask(label, section) {
-    this.dispatch({label, section});
+  addTask(attributes) {
+    this.dispatch(attributes);
   }
 
   taskAdded(task) {
     this.dispatch(task);
   }
 
-  delTask(task, section) {
-    this.dispatch({task, section});
+  deleteTask(task) {
+    this.dispatch(task);
   }
 
   taskDeleted(id) {

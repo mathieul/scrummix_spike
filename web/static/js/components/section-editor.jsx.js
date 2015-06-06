@@ -1,5 +1,6 @@
 import TaskEditor from "./task-editor.jsx";
 import TaskActions from "../actions/task";
+import Task from "../models/task";
 /* global React */
 
 export default React.createClass({
@@ -59,7 +60,11 @@ export default React.createClass({
 
   handleSubmit(event) {
     event.preventDefault();
-    TaskActions.addTask(this.state.newTaskLabel, this.props.sections.first());
+    let task = new Task({
+      label: this.state.newTaskLabel,
+      section_id: this.props.sections.first().id
+    });
+    TaskActions.addTask(task);
     this.setState({newTaskLabel: null});
   }
 });

@@ -40,7 +40,6 @@ export default React.createClass({
 
   handleClick(event) {
     event.preventDefault();
-    let {task, section} = this.props;
-    TaskActions.delTask(task, section);
+    TaskActions.deleteTask(this.props.task);
   }
 });

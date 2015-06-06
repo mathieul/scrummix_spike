@@ -4,7 +4,6 @@ import TaskActions from "../actions/task";
 
 /* global Immutable */
 /* global inflection */
-/* global uuid */
 let Operation = Immutable.Record({type: null, id: null});
 
 let _channel = null;
@@ -36,18 +35,15 @@ class ChannelStoreBase {
       .receive("ignore", () => _channel = null);
   }
 
-  addItem(attributes) {
+  addItem(task) {
     assertChannelConnected('addItem');
-    let id = uuid.v1();
-    let itemAttributes = Object.assign({id: uuid.v1()}, attributes);
-    console.log('addItem:', itemAttributes);
-    setTimeout(() => TaskActions.taskAdded(itemAttributes), 0);
-    this.executeOperation('add', itemAttributes, payload => this.processEvent('del', payload));
+    console.log('addItem:', task);
+    this.executeOperation('add', task, payload => this.processEvent('del', payload));
+    setTimeout(() => TaskActions.taskAdded(task), 0);
   }
 
-  deleteItem(id) {
-    assertChannelConnected('addItem');
-    id = typeof id === 'object' ? id.id : id;
+  deleteItem(item) {
+    assertChannelConnected('deleteItem');
     if (item) {
       TaskActions.taskDeleted(id);
       this._executeOperation('del', item, payload => {
@@ -66,7 +62,7 @@ class ChannelStoreBase {
   itemAdded(payload) {
     console.log('itemAdded:', payload);
     if (payload.ref) {
-      TaskActions.taskDeleted(payload.ref);
+      TaskActions.taskDeleted(payload);
       this.pending = this.pending.remove(payload.ref);
     }
     TaskActions.taskAdded(payload);
@@ -77,17 +73,16 @@ class ChannelStoreBase {
     let attributes = payload[this.modelName],
         id = attributes && attributes.id;
 
-    id = id || payload.ref;
     if (id) {
       TaskActions.taskDeleted(id);
       this.pending = this.pending.remove(id);
     }
   }
 
-  executeOperation(type, attributes, onError = function () {}) {
-    let operation = new Operation({type, id: attributes.id});
-    this.pending = this.pending.set(attributes.id, operation);
-    _channel.push(type, {ref: attributes.id, attributes: attributes})
+  executeOperation(type, item, onError = function () {}) {
+    let operation = new Operation({type, id: item.id, item: item});
+    this.pending = this.pending.set(item.id, operation);
+    _channel.push(type, {ref: item.id, attributes: item.toObject()})
       .receive('ok', payload => this.processEvent(type, payload))
       .receive('error', onError);
   }
@@ -111,20 +106,20 @@ class TaskChannelStore extends ChannelStoreBase {
     super();
 
     this.bindListeners({
-      setSocket:     TaskActions.SET_SOCKET,
-      handleAddTask: TaskActions.ADD_TASK,
-      handleDelTask: TaskActions.DEL_TASK
+      setSocket:        TaskActions.SET_SOCKET,
+      handleAddTask:    TaskActions.ADD_TASK,
+      handleDeleteTask: TaskActions.DELETE_TASK
     });
   }
 
-  handleAddTask({label, section}) {
-    console.log('addTask:', label, section);
-    this.addItem({label: label, section_id: section.id, position: 0});
+  handleAddTask(task) {
+    console.log('addTask: task = ', task);
+    this.addItem(task);
   }
 
-  handleDelTask({task, section}) {
-    console.log('delTask:', task, section);
-    this.deleteItem({id: task.id});
+  handleDeleteTask(task) {
+    console.log('deleteTask: task = ', task);
+    this.deleteItem(task);
   }
 }
 

@@ -29,9 +29,8 @@ class TaskStore {
     this.errorMessage = message;
   }
 
-  handleTaskAdded(attributes) {
-    console.log('handleTaskAdded: ', attributes);
-    let task = new Task(attributes);
+  handleTaskAdded(task) {
+    console.log('handleTaskAdded: ', task);
     let filter = this.getInstance()._filter;
     if (!filter || filter(task)) {
       this.tasks = this.tasks.set(task.id, task);
@@ -39,8 +38,7 @@ class TaskStore {
     }
   }
 
-  handleTaskDeleted(id) {
-    let task = this.tasks.get(id);
+  handleTaskDeleted(task) {
     if (task) {
       this.tasks = this.tasks.delete(task.id);
       this.emitChange();
