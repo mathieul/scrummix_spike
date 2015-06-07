@@ -29,6 +29,9 @@ class TaskActions {
     this.dispatch(id);
   }
 
+  errorChanged(errorMessage) {
+    this.dispatch(errorMessage);
+  }
 }
 
 export default alt.createActions(TaskActions);

@@ -10,6 +10,9 @@ let _sections = null, _tasks = null;
 class SectionsWithTasks {
   constructor() {
     this.sections = Immutable.List();
+    this.bindListeners({
+      handleErrorChanged: TaskActions.ERROR_CHANGED
+    });
     this.exportPublicMethods({
       fetch: (...args) => this.fetch(...args)
     });
@@ -39,6 +42,11 @@ class SectionsWithTasks {
         });
       this.emitChange();
     }
+  }
+
+  handleErrorChanged(errorMessage) {
+    this.lastErrorMessage = errorMessage;
+    this.emitChange();
   }
 }
 

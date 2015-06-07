@@ -4,7 +4,7 @@ import TaskActions from "../actions/task";
 
 /* global Immutable */
 /* global inflection */
-let Operation = Immutable.Record({type: null, id: null});
+let Operation = Immutable.Record({type: null, item: null});
 
 let _channel = null;
 
@@ -19,8 +19,10 @@ class ChannelStoreBase {
     this.pending = Immutable.Map();
   }
 
-  get collectionName() { throw "ChannelStoreBase: collectionName getter not implemented"; }
-  get modelName()      { return inflection.singularize(this.collectionName); }
+  get modelName() { return inflection.singularize(this.collectionName); }
+
+  get collectionName()       { throw "ChannelStoreBase: collectionName getter not implemented"; }
+  triggerError(errorMessage) { throw "ChannelStoreBase: triggerError method not implemented"; }
 
   setSocket(socket) {
     if (_channel) {
@@ -30,15 +32,14 @@ class ChannelStoreBase {
     _channel = socket.chan(`${this.collectionName}:store`, {token: "todo-task-token"});
     _channel
       .join()
-      .receive("ok", () => this.listenForItemEvents())
+      .receive("ok", () => this._listenForItemEvents())
       .receive("error", () => _channel = null)
       .receive("ignore", () => _channel = null);
   }
 
   addItem(task) {
     assertChannelConnected('addItem');
-    console.log('addItem:', task);
-    this.executeOperation('add', task, payload => this.processEvent('del', payload));
+    this._executeOperation('add', task, payload => this._processEvent('del', payload));
     setTimeout(() => TaskActions.taskAdded(task), 0);
   }
 
@@ -53,14 +54,13 @@ class ChannelStoreBase {
     return item;
   }
 
-  listenForItemEvents() {
-    assertChannelConnected('listenForItemEvents');
-    _channel.on('added', payload => this.itemAdded(payload));
-    _channel.on('deleted', payload => this.itemDeleted(payload));
+  _listenForItemEvents() {
+    assertChannelConnected('_listenForItemEvents');
+    _channel.on('added', payload => this._itemAdded(payload));
+    _channel.on('deleted', payload => this._itemDeleted(payload));
   }
 
-  itemAdded(payload) {
-    console.log('itemAdded:', payload);
+  _itemAdded(payload) {
     if (payload.ref) {
       TaskActions.taskDeleted(payload);
       this.pending = this.pending.remove(payload.ref);
@@ -68,34 +68,47 @@ class ChannelStoreBase {
     TaskActions.taskAdded(payload);
   }
 
-  itemDeleted(payload) {
-    console.log('itemDeleted:', payload);
+  _itemDeleted(payload) {
     let attributes = payload[this.modelName],
         id = attributes && attributes.id;
 
+    id = id || payload.ref;
     if (id) {
       TaskActions.taskDeleted(id);
       this.pending = this.pending.remove(id);
     }
   }
 
-  executeOperation(type, item, onError = function () {}) {
-    let operation = new Operation({type, id: item.id, item: item});
+  _executeOperation(type, item, onError = function () {}) {
+    let operation = new Operation({type, item: item});
     this.pending = this.pending.set(item.id, operation);
     _channel.push(type, {ref: item.id, attributes: item.toObject()})
-      .receive('ok', payload => this.processEvent(type, payload))
+      .receive('ok', payload => this._processEvent(type, payload))
       .receive('error', onError);
   }
 
-  processEvent(type, payload) {
+  _processEvent(type, payload) {
+    if (payload.errors) {
+      this._triggerError(payload.errors);
+    }
     switch (type) {
       case 'add':
-        this.itemAdded(payload);
+        this._itemAdded(payload);
         break;
       case 'del':
-        this.itemDeleted(payload);
+        this._itemDeleted(payload);
         break;
     }
+  }
+
+  _triggerError(errors) {
+    function format(name, messages) {
+      return messages.map(message => `${name} ${message}`).join(', ');
+    }
+    let message = Object.keys(errors).reduce(function(messages, name) {
+      return messages.concat(format(name, errors[name]));
+    }, []);
+    this.triggerError(message.join(', '));
   }
 }
 
@@ -113,13 +126,16 @@ class TaskChannelStore extends ChannelStoreBase {
   }
 
   handleAddTask(task) {
-    console.log('addTask: task = ', task);
     this.addItem(task);
   }
 
   handleDeleteTask(task) {
-    console.log('deleteTask: task = ', task);
+    TaskActions.errorChanged(null);
     this.deleteItem(task);
+  }
+
+  triggerError(errorMessage) {
+    TaskActions.errorChanged(errorMessage);
   }
 }
 

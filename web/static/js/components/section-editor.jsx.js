@@ -8,8 +8,13 @@ export default React.createClass({
     return {newTaskLabel: null};
   },
 
+  componentWillReceiveProps(props) {
+    this.setState({lastErrorMessage: props.lastErrorMessage, section: props.sections.first()});
+  },
+
   render() {
-    let section = this.props.sections.first();
+    let {section, lastErrorMessage} = this.state;
+
     if (!section) {
       return <div className="empty-section-editor"></div>;
     }
@@ -17,11 +22,15 @@ export default React.createClass({
     let itemNodes = section.tasks.map(function (task) {
       return <TaskEditor key={ `task-${task.id || task.ref}` } task={ task } section={ section } />;
     });
-
     let labelClasses = `ui ribbon ${section.color} label`;
+    let errorContent;
+    if (lastErrorMessage) {
+      errorContent = <div className="yellow ui message">{lastErrorMessage}</div>;
+    }
 
     return (
       <div className="section-editor">
+        {errorContent}
         <form className="ui form raised segment" onSubmit={ this.handleSubmit } role="form">
           <div className={labelClasses}>{ section.label }</div>
           <div className="one field">
@@ -55,7 +64,7 @@ export default React.createClass({
   },
 
   handleChange(event) {
-    this.setState({newTaskLabel: event.target.value});
+    this.setState({newTaskLabel: event.target.value, lastErrorMessage: null});
   },
 
   handleSubmit(event) {
