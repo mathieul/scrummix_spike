@@ -16,7 +16,7 @@ export default React.createClass({
                   <div className="ui toggle checkbox" ref="toggle">
                     <input type="checkbox" checked={ !!task.completed_at } />
                   </div>
-                  <span className={ completedClassName }>{ task.label } [{ task.id }]</span>
+                  <span className={ completedClassName }>{ task.label }</span>
                 </div>
               </div>
               <div className="right aligned three wide column">
