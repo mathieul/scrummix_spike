@@ -7,8 +7,6 @@ import ChannelActions from '../actions/channel';
 /* global inflection */
 
 class TaskChannelStore extends ChannelStoreBase {
-  get collectionName() { return 'tasks'; }
-
   constructor() {
     super();
 
@@ -19,25 +17,12 @@ class TaskChannelStore extends ChannelStoreBase {
     });
   }
 
-  handleAddTask(task) {
-    this.addItem(task);
-  }
-
-  triggerItemAdded(task) {
-    TaskActions.taskAdded(task);
-  }
-
-  handleDeleteTask(task) {
-    this.deleteItem(task);
-  }
-
-  triggerItemDeleted(task) {
-    TaskActions.taskDeleted(task);
-  }
-
-  triggerError(errorMessage) {
-    TaskActions.errorChanged(errorMessage);
-  }
+  get collectionName()        { return 'tasks'; }
+  handleAddTask(task)         { this.addItem(task); }
+  handleDeleteTask(task)      { this.deleteItem(task); }
+  triggerItemAdded(task)      { console.log('triggerItemAdded:', task); TaskActions.taskAdded(task); }
+  triggerItemDeleted(task)    { console.log('triggerItemDeleted:', task); TaskActions.taskDeleted(task); }
+  triggerError(errorMessage)  { TaskActions.errorChanged(errorMessage); }
 }
 
 export default alt.createStore(TaskChannelStore, 'TaskChannelStore');

@@ -9,6 +9,10 @@ defmodule Scrummix.TaskView do
     %{task: render_one(task, "task.json")}
   end
 
+  def render("attributes.json", %{task: task}) do
+    %{attributes: render_one(task, "task.json")}
+  end
+
   def render("task.json", %{task: task}) do
     %{
       id: task.id,

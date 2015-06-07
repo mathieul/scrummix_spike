@@ -21,7 +21,7 @@ defmodule Scrummix.TaskChannel do
 
     if changeset.valid? do
       task = Repo.insert(changeset)
-      serialized = Phoenix.View.render(Scrummix.TaskView, "show.json", %{task: task})
+      serialized = Phoenix.View.render(Scrummix.TaskView, "attributes.json", %{task: task})
       serialized = Map.put(serialized, :ref, ref)
       {:reply, {:ok, serialized}, socket}
     else
@@ -39,7 +39,7 @@ defmodule Scrummix.TaskChannel do
   def handle_in("delete", %{"ref" => task_id}, socket) do
     if task = Repo.get(Task, task_id) do
       task = Repo.delete(task)
-      serialized = Phoenix.View.render(Scrummix.TaskView, "show.json", %{task: task})
+      serialized = Phoenix.View.render(Scrummix.TaskView, "attributes.json", %{task: task})
       {:reply, {:ok, serialized}, socket}
     else
       {:reply, {:ok, %{task: %{id: task_id}}}}

@@ -65,14 +65,18 @@ class ChannelStoreBase {
   }
 
   _itemAdded(payload) {
+    console.log('_itemAdded:', payload);
     if (payload.ref) {
-      setTimeout(() => this.triggerItemDeleted(payload));
+      let payloadToDelete = Object.assign({}, payload);
+      setTimeout(() => this.triggerItemDeleted(payloadToDelete), 0);
       this.pending = this.pending.remove(payload.ref);
+      delete payload.ref;
     }
-    this.triggerItemAdded(payload);
+    setTimeout(() => this.triggerItemAdded(payload), 0);
   }
 
   _itemDeleted(payload) {
+    console.log('_itemDeleted:', payload);
     let attributes = payload[this.modelName],
         id = attributes && attributes.id;
 
@@ -84,14 +88,17 @@ class ChannelStoreBase {
   }
 
   _executeOperation(type, item, onError = function () {}) {
+    console.log('_executeOperation:', type, item);
     let operation = new Operation({type, item: item});
     this.pending = this.pending.set(item.id, operation);
+    this._itemAdded(item);
     _channel.push(type, {ref: item.id, attributes: item.toObject()})
       .receive('ok', payload => this._processEvent(type, payload))
       .receive('error', onError);
   }
 
   _processEvent(type, payload) {
+    console.log('_processEvent:', type, payload);
     if (payload.errors) {
       this._triggerError(payload.errors);
     }
