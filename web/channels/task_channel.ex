@@ -36,7 +36,7 @@ defmodule Scrummix.TaskChannel do
     {:no_reply, socket}
   end
 
-  def handle_in("delete", %{"ref" => task_id}, socket) do
+  def handle_in("delete", %{"attributes" => %{"id" => task_id}}, socket) do
     if task = Repo.get(Task, task_id) do
       task = Repo.delete(task)
       serialized = Phoenix.View.render(Scrummix.TaskView, "attributes.json", %{task: task})
