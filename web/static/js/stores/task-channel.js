@@ -22,6 +22,8 @@ class ChannelStoreBase {
   get modelName() { return inflection.singularize(this.collectionName); }
 
   get collectionName()       { throw "ChannelStoreBase: collectionName getter not implemented"; }
+  itemAdded(item)            { throw "ChannelStoreBase: itemAdded method not implemented"; }
+  itemDeleted(item)          { throw "ChannelStoreBase: itemDeleted method not implemented"; }
   triggerError(errorMessage) { throw "ChannelStoreBase: triggerError method not implemented"; }
 
   setSocket(socket) {
@@ -37,17 +39,17 @@ class ChannelStoreBase {
       .receive("ignore", () => _channel = null);
   }
 
-  addItem(task) {
+  addItem(item) {
     assertChannelConnected('addItem');
-    this._executeOperation('add', task, payload => this._processEvent('del', payload));
-    setTimeout(() => TaskActions.taskAdded(task), 0);
+    this._executeOperation('add', item, payload => this._processEvent('delete', payload));
+    this.itemAdded(item);
   }
 
   deleteItem(item) {
     assertChannelConnected('deleteItem');
     if (item) {
-      TaskActions.taskDeleted(id);
-      this._executeOperation('del', item, payload => {
+      this.itemDeleted(item);
+      this._executeOperation('delete', item, payload => {
         this._processEvent('add', {ref: item.id, [this.modelName]: item.toJSON()});
       });
     }
@@ -95,7 +97,7 @@ class ChannelStoreBase {
       case 'add':
         this._itemAdded(payload);
         break;
-      case 'del':
+      case 'delete':
         this._itemDeleted(payload);
         break;
     }
@@ -129,9 +131,16 @@ class TaskChannelStore extends ChannelStoreBase {
     this.addItem(task);
   }
 
+  itemAdded(task) {
+    setTimeout(() => TaskActions.taskAdded(task), 0);
+  }
+
   handleDeleteTask(task) {
-    TaskActions.errorChanged(null);
     this.deleteItem(task);
+  }
+
+  itemDeleted(task) {
+    setTimeout(() => TaskActions.taskDeleted(task), 0);
   }
 
   triggerError(errorMessage) {
