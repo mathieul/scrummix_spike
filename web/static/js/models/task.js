@@ -4,7 +4,7 @@
 export default class Task extends Immutable.Record({
   id:            null,
   label:         null,
-  position:      0,
+  position:      null,
   completed_at:  null,
   section_id:    null
 }) {

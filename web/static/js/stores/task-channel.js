@@ -1,6 +1,7 @@
 import alt from '../util/alt';
 import Task from '../models/task';
 import TaskActions from "../actions/task";
+import ChannelActions from '../actions/channel';
 
 /* global Immutable */
 /* global inflection */
@@ -26,17 +27,23 @@ class ChannelStoreBase {
   itemDeleted(item)          { throw "ChannelStoreBase: itemDeleted method not implemented"; }
   triggerError(errorMessage) { throw "ChannelStoreBase: triggerError method not implemented"; }
 
-  setSocket(socket) {
-    if (_channel) {
-      _channel.disconnect();
-    }
+  connect(settings) {
+    if (!settings.socket) { throw "connect: missing socket"; }
+    if (_channel) { _channel.disconnect(); }
 
-    _channel = socket.chan(`${this.collectionName}:store`, {token: "todo-task-token"});
+    let storeName = `${this.collectionName}:store`;
+    function errorReporter(kind) {
+      return function () {
+        let message = `connect: joining ${storeName} store failed [${kind}].`;
+        throw message;
+      };
+    }
+    _channel = settings.socket.chan(storeName, {token: settings.token || {}});
     _channel
       .join()
       .receive("ok", () => this._listenForItemEvents())
-      .receive("error", () => _channel = null)
-      .receive("ignore", () => _channel = null);
+      .receive("error", errorReporter("error"))
+      .receive("ignore", errorReporter("ignore"));
   }
 
   addItem(item) {
@@ -121,7 +128,7 @@ class TaskChannelStore extends ChannelStoreBase {
     super();
 
     this.bindListeners({
-      setSocket:        TaskActions.SET_SOCKET,
+      connect:          ChannelActions.CONNECT,
       handleAddTask:    TaskActions.ADD_TASK,
       handleDeleteTask: TaskActions.DELETE_TASK
     });
