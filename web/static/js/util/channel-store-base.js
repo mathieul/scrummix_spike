@@ -2,9 +2,14 @@
 /* global inflection */
 /* global uuid */
 
+
+function makeRef() {
+  return uuid.v1();
+}
+
 class Request extends Immutable.Record({ref: null, type: null, item: null}) {
   constructor(attributes) {
-    attributes.ref = uuid.v1();
+    attributes.ref = makeRef();
     super(attributes);
   }
 }
@@ -25,6 +30,10 @@ class ChannelStoreBase {
   triggerError(errorMessage) { throw "ChannelStoreBase: triggerError method not implemented"; }
 
   get modelName() { return inflection.singularize(this.collectionName); }
+
+  constructor() {
+    this.ref = makeRef();
+  }
 
   connect(settings) {
     if (!settings.socket) { throw "connect: missing socket"; }
@@ -59,6 +68,7 @@ class ChannelStoreBase {
       })
       .catch(({errors}) => {
         setTimeout(() => this.triggerItemDeleted(request.item), 0);
+        console.log(arguments);
         this._triggerError(errors);
       });
   }
@@ -68,7 +78,6 @@ class ChannelStoreBase {
     setTimeout(() => this.triggerItemDeleted(item), 0);
     let request = new Request({type: 'delete', item: item});
     this._submitRequest(request)
-      .then(() => console.log('deleteItem: OK'))
       .catch(({errors}) => {
         setTimeout(() => this.triggerItemAdded(request.item), 0);
         this._triggerError(errors);
@@ -77,39 +86,30 @@ class ChannelStoreBase {
 
   _listenForItemEvents() {
     assertChannelConnected('_listenForItemEvents');
-    _channel.on('added', payload => this._itemAdded(payload));
-    _channel.on('deleted', payload => this._itemDeleted(payload));
+    _channel.on('added', this._itemAdded.bind(this));
+    _channel.on('deleted', this._itemDeleted.bind(this));
   }
 
   _itemAdded(payload) {
-    console.log('_itemAdded:', payload);
-    // if (payload.ref) {
-    //   let payloadToDelete = Object.assign({}, payload);
-    //   setTimeout(() => this.triggerItemDeleted(payloadToDelete), 0);
-    //   this.pending = this.pending.remove(payload.ref);
-    //   delete payload.ref;
-    // }
-    // setTimeout(() => this.triggerItemAdded(payload), 0);
+    console.log('_itemAdded:', payload, this.ref);
+    if (payload.from !== this.ref) {
+      let item = new this.model(payload.attributes);
+      this.triggerItemAdded(item);
+    }
   }
 
   _itemDeleted(payload) {
-    console.log('_itemDeleted:', payload);
-    // let attributes = payload[this.modelName],
-    //     id = attributes && attributes.id;
-
-    // id = id || payload.ref;
-    // if (id) {
-    //   this.triggerItemDeleted(payload);
-    //   this.pending = this.pending.remove(id);
-    // }
+    console.log('_itemDeleted:', payload, this.ref);
+    if (payload.from !== this.ref) {
+      let item = new this.model(payload.attributes);
+      this.triggerItemDeleted(item);
+    }
   }
 
   _submitRequest(request) {
-    console.log('_submitRequest:', request);
-    return new Promise(function (resolve, reject) {
-      _channel.push(request.type, {ref: request.ref, attributes: request.item.toObject()})
-        .receive('ok',    response => resolve(response))
-        .receive('error', response => reject(response));
+    return new Promise((resolve, reject) => {
+      let payload = {from: this.ref, ref: request.ref, attributes: request.item.toObject()};
+      _channel.push(request.type, payload).receive('ok', resolve).receive('error', reject)
     });
   }
 

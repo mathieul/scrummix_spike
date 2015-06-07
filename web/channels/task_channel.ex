@@ -15,7 +15,7 @@ defmodule Scrummix.TaskChannel do
     end
   end
 
-  def handle_in("add", p = %{"ref" => ref,"attributes" => attributes}, socket) do
+  def handle_in("add", p = %{"ref" => ref, "from" => from, "attributes" => attributes}, socket) do
     IO.puts "handle_in(add, #{inspect p}, ...)"
     changeset = Task.changeset(%Task{}, attributes)
 
@@ -23,6 +23,7 @@ defmodule Scrummix.TaskChannel do
       task = Repo.insert(changeset)
       serialized = Phoenix.View.render(Scrummix.TaskView, "attributes.json", %{task: task})
       serialized = Map.put(serialized, :ref, ref)
+      broadcast! socket, "added", Map.put(serialized, "from", from)
       {:reply, {:ok, serialized}, socket}
     else
       serialized = Phoenix.View.render(Scrummix.ChangesetView, "error.json", changeset: changeset)
@@ -36,10 +37,11 @@ defmodule Scrummix.TaskChannel do
     {:no_reply, socket}
   end
 
-  def handle_in("delete", %{"attributes" => %{"id" => task_id}}, socket) do
+  def handle_in("delete", %{"from" => from, "attributes" => %{"id" => task_id}}, socket) do
     if task = Repo.get(Task, task_id) do
       task = Repo.delete(task)
       serialized = Phoenix.View.render(Scrummix.TaskView, "attributes.json", %{task: task})
+      broadcast! socket, "deleted", Map.put(serialized, "from", from)
       {:reply, {:ok, serialized}, socket}
     else
       {:reply, {:ok, %{task: %{id: task_id}}}}
