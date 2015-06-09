@@ -39,7 +39,7 @@ class ChannelStoreBase {
     if (!settings.socket) { throw "connect: missing socket"; }
     if (_channel) { _channel.disconnect(); }
 
-    let storeName = `${this.collectionName}:store`;
+    let storeName = `${this.collectionName}:${settings.id || 'all'}`;
     function errorReporter(kind) {
       return function () {
         let message = `connect: joining ${storeName} store failed [${kind}].`;

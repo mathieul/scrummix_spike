@@ -4,9 +4,9 @@ defmodule Scrummix.TaskChannel do
   alias Scrummix.Repo
   alias Scrummix.Task
 
-  @store_topic "tasks:store"
+  @topic_prefix "tasks"
 
-  def join(@store_topic, payload, socket) do
+  def join(@topic_prefix <> _all_or_id, payload, socket) do
     IO.puts "join: #{inspect payload}"
     if authorized?(payload) do
       {:ok, socket}
@@ -15,15 +15,14 @@ defmodule Scrummix.TaskChannel do
     end
   end
 
-  def handle_in("add", p = %{"ref" => ref, "from" => from, "attributes" => attributes}, socket) do
-    IO.puts "handle_in(add, #{inspect p}, ...)"
+  def handle_in("add", %{"ref" => ref, "from" => from, "attributes" => attributes}, socket) do
     changeset = Task.changeset(%Task{}, attributes)
 
     if changeset.valid? do
       task = Repo.insert(changeset)
       serialized = Phoenix.View.render(Scrummix.TaskView, "attributes.json", %{task: task})
       serialized = Map.put(serialized, :ref, ref)
-      broadcast! socket, "added", Map.put(serialized, "from", from)
+      publish_message("added", {task.id, serialized}, from)
       {:reply, {:ok, serialized}, socket}
     else
       serialized = Phoenix.View.render(Scrummix.ChangesetView, "error.json", changeset: changeset)
@@ -32,16 +31,11 @@ defmodule Scrummix.TaskChannel do
     end
   end
 
-  def handle_in("added", payload, socket) do
-    Scrummix.Endpoint.broadcast_from! self, @store_topic, "added", payload
-    {:no_reply, socket}
-  end
-
   def handle_in("delete", %{"from" => from, "attributes" => %{"id" => task_id}}, socket) do
     if task = Repo.get(Task, task_id) do
       task = Repo.delete(task)
       serialized = Phoenix.View.render(Scrummix.TaskView, "attributes.json", %{task: task})
-      broadcast! socket, "deleted", Map.put(serialized, "from", from)
+      publish_message("deleted", {task_id, serialized}, from)
       {:reply, {:ok, serialized}, socket}
     else
       {:reply, {:ok, %{task: %{id: task_id}}}}
@@ -52,6 +46,14 @@ defmodule Scrummix.TaskChannel do
     push socket, event, payload
     {:noreply, socket}
   end
+
+  defp publish_message(kind, {id, content}, from) do
+    payload = Map.put(content, "from", from)
+    # broadcast!(socket, kind, payload)
+    Scrummix.Endpoint.broadcast("#{@topic_prefix}:all", kind, payload)
+    Scrummix.Endpoint.broadcast("#{@topic_prefix}:#{id}", kind, payload)
+  end
+
 
   # Add authorization logic here as required.
   defp authorized?(payload) do
