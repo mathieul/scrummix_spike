@@ -20,11 +20,8 @@ class SectionsWithTasks {
     TaskStore.listen(state => this.buildSectionList(state));
   }
 
-  fetch(filters = {}) {
-    SectionStore.setFilter(filters.section);
+  fetch() {
     SectionStore.fetchSections();
-
-    TaskStore.setFilter(filters.task);
     TaskStore.fetchTasks();
   }
 

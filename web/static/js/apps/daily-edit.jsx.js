@@ -26,8 +26,7 @@ let Application = React.createClass({
   },
 
   componentDidMount() {
-    let sectionId = Scrummix.section_id;
-    SectionsWithTasksStore.fetch({section: section => section.id === sectionId});
+    SectionsWithTasksStore.fetch();
   }
 });
 
