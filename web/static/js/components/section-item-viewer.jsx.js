@@ -1,16 +1,8 @@
 /* global React */
 
 export default React.createClass({
-  getInitialState() {
-    return {section: this.props.section};
-  },
-
-  componentWillReceiveProps(props) {
-    this.setState({section: this.props.section});
-  },
-
   render() {
-    const {section} = this.state;
+    const {section} = this.props;
 
     if (!section) {
       return <div className="ui raised segment" />;
