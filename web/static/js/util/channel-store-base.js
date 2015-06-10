@@ -47,6 +47,7 @@ class ChannelStoreBase {
         throw message;
       };
     }
+    console.log(`JOIN: (${storeName})`)
     _channel = settings.socket.chan(storeName, {token: settings.token || {}});
     _channel
       .join()
@@ -112,6 +113,7 @@ class ChannelStoreBase {
   }
 
   _itemUpdated(payload) {
+    console.log('_itemUpdated:', payload);
     if (payload.from !== this.ref) {
       let item = new this.model(payload.attributes);
       this.triggerItemUpdated(item);

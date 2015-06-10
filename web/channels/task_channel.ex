@@ -72,8 +72,8 @@ defmodule Scrummix.TaskChannel do
 
   defp publish_message(kind, {id, content}, from) do
     payload = Map.put(content, "from", from)
-    # broadcast!(socket, kind, payload)
     Scrummix.Endpoint.broadcast("#{@topic_prefix}:all", kind, payload)
+    IO.puts "publish_message(#{kind}) from [#{from}]: #{"#{@topic_prefix}:#{id}"}"
     Scrummix.Endpoint.broadcast("#{@topic_prefix}:#{id}", kind, payload)
   end
 

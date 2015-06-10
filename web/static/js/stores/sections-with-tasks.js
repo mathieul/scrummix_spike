@@ -16,8 +16,8 @@ class SectionsWithTasks {
     this.exportPublicMethods({
       fetch: (...args) => this.fetch(...args)
     });
-    SectionStore.listen(state => this.buildSectionList(state));
-    TaskStore.listen(state => this.buildSectionList(state));
+    SectionStore.listen(state => this.buildSectionList(state, 'section'));
+    TaskStore.listen(state => this.buildSectionList(state, 'task'));
   }
 
   fetch() {
@@ -25,7 +25,7 @@ class SectionsWithTasks {
     TaskStore.fetchTasks();
   }
 
-  buildSectionList(data) {
+  buildSectionList(data, storeName) {
     if (data.sections) { _sections = data.sections; }
     if (data.tasks)    { _tasks = data.tasks; }
 
@@ -40,6 +40,7 @@ class SectionsWithTasks {
             .toList();
           return section.set('tasks', sectionTasks);
         });
+      console.log(`SectionWIthTasks changed (${storeName})`);
       this.emitChange();
     }
   }

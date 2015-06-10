@@ -1,8 +1,8 @@
 import {Socket} from "phoenix";
-import SectionListViewer from '../components/section-list-viewer.jsx';
 import TaskChannelStore from '../stores/task-channel';
 import SectionsWithTasksStore from '../stores/sections-with-tasks';
 import ChannelActions from '../actions/channel';
+import SectionListViewer from '../components/section-list-viewer.jsx';
 /* global Alt */
 /* global React */
 
