@@ -36,19 +36,19 @@ class ChannelStoreBase {
     this.ref = makeRef();
   }
 
-  connect(settings) {
-    if (!settings.socket) { throw "connect: missing socket"; }
+  join(settings) {
+    if (!settings.socket)   { throw "connect: missing socket"; }
+    if (!settings.subtopic) { throw "connect: missing subtopic"; }
     if (_channel) { _channel.disconnect(); }
 
-    let storeName = `${this.collectionName}:${settings.id || 'all'}`;
+    let topic = `${this.collectionName}:${settings.subtopic}`;
     function errorReporter(kind) {
       return function () {
-        let message = `connect: joining ${storeName} store failed [${kind}].`;
+        let message = `connect: joining ${topic} store failed [${kind}].`;
         throw message;
       };
     }
-    console.log(`JOIN: (${storeName})`)
-    _channel = settings.socket.chan(storeName, {token: settings.token || {}});
+    _channel = settings.socket.chan(topic, {token: settings.token || {}});
     _channel
       .join()
       .receive("ok", () => this._listenForItemEvents())
@@ -113,7 +113,6 @@ class ChannelStoreBase {
   }
 
   _itemUpdated(payload) {
-    console.log('_itemUpdated:', payload);
     if (payload.from !== this.ref) {
       let item = new this.model(payload.attributes);
       this.triggerItemUpdated(item);

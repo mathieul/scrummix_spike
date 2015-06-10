@@ -13,7 +13,11 @@ socket.connect();
 socket.onError(reason => console.log("TODO>>> SOCKET ERROR ---> ", reason));
 socket.onClose(reason => console.log("TODO>>> SOCKET CLOSE ---> ", reason));
 
-ChannelActions.connect({socket: socket, token: 'todo-task-token', id: Scrummix.section_id});
+ChannelActions.join({
+  socket: socket,
+  token: 'todo-task-token',
+  subtopic: `section_id=${Scrummix.section_id}`
+});
 
 let Application = React.createClass({
   render() {

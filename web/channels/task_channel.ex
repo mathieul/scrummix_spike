@@ -7,7 +7,6 @@ defmodule Scrummix.TaskChannel do
   @topic_prefix "tasks"
 
   def join(@topic_prefix <> _all_or_id, payload, socket) do
-    IO.puts "join: #{inspect payload}"
     if authorized?(payload) do
       {:ok, socket}
     else
@@ -22,7 +21,7 @@ defmodule Scrummix.TaskChannel do
       task = Repo.insert(changeset)
       serialized = Phoenix.View.render(Scrummix.TaskView, "attributes.json", %{task: task})
       serialized = Map.put(serialized, :ref, ref)
-      publish_message("added", {task.id, serialized}, from)
+      publish_message("added", {task, serialized}, from)
       {:reply, {:ok, serialized}, socket}
     else
       serialized = Phoenix.View.render(Scrummix.ChangesetView, "error.json", changeset: changeset)
@@ -49,7 +48,7 @@ defmodule Scrummix.TaskChannel do
     if Map.has_key?(content, "errors") do
       {:reply, {:error, content}, socket}
     else
-      publish_message("updated", {task.id, content}, from)
+      publish_message("updated", {task, content}, from)
       {:reply, {:ok, content}, socket}
     end
   end
@@ -58,7 +57,7 @@ defmodule Scrummix.TaskChannel do
     if task = Repo.get(Task, task_id) do
       task = Repo.delete(task)
       serialized = Phoenix.View.render(Scrummix.TaskView, "attributes.json", %{task: task})
-      publish_message("deleted", {task_id, serialized}, from)
+      publish_message("deleted", {task, serialized}, from)
       {:reply, {:ok, serialized}, socket}
     else
       {:reply, {:ok, %{task: %{id: task_id}}}}
@@ -70,11 +69,10 @@ defmodule Scrummix.TaskChannel do
     {:noreply, socket}
   end
 
-  defp publish_message(kind, {id, content}, from) do
+  defp publish_message(kind, {task, content}, from) do
     payload = Map.put(content, "from", from)
     Scrummix.Endpoint.broadcast("#{@topic_prefix}:all", kind, payload)
-    IO.puts "publish_message(#{kind}) from [#{from}]: #{"#{@topic_prefix}:#{id}"}"
-    Scrummix.Endpoint.broadcast("#{@topic_prefix}:#{id}", kind, payload)
+    Scrummix.Endpoint.broadcast("#{@topic_prefix}:section_id=#{task.section_id}", kind, payload)
   end
 
 

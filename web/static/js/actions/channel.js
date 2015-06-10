@@ -1,7 +1,7 @@
 import alt from '../util/alt';
 
 class ChannelActions {
-  connect(settings) {
+  join(settings) {
     this.dispatch(settings);
   }
 }

@@ -39,7 +39,6 @@ class TaskStore {
   }
 
   handleTaskUpdated(task) {
-    console.log(`handleTaskUpdated (${task.label})`);
     let filter = this.getInstance()._filter;
     if (!filter || filter(task)) {
       this.tasks = this.tasks.delete(task.id);

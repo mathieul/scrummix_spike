@@ -40,7 +40,6 @@ class SectionsWithTasks {
             .toList();
           return section.set('tasks', sectionTasks);
         });
-      console.log(`SectionWIthTasks changed (${storeName})`);
       this.emitChange();
     }
   }

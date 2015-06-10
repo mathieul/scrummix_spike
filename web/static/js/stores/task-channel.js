@@ -18,7 +18,7 @@ class TaskChannelStore extends ChannelStoreBase {
     super();
 
     this.bindListeners({
-      connect:              ChannelActions.CONNECT,
+      join:                 ChannelActions.JOIN,
       handleAdd:            TaskActions.ADD_TASK,
       handleDelete:         TaskActions.DELETE_TASK,
       handleComplete:       TaskActions.COMPLETE,

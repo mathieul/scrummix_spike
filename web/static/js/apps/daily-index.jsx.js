@@ -13,7 +13,11 @@ socket.connect();
 socket.onError(reason => console.log("TODO>>> SOCKET ERROR ---> ", reason));
 socket.onClose(reason => console.log("TODO>>> SOCKET CLOSE ---> ", reason));
 
-ChannelActions.connect({socket: socket, token: 'todo-task-token'});
+ChannelActions.join({
+  socket: socket,
+  token: 'todo-task-token',
+  subtopic: 'all'
+});
 
 let Application = React.createClass({
   render() {
