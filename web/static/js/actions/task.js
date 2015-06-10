@@ -32,6 +32,18 @@ class TaskActions {
   errorChanged(errorMessage) {
     this.dispatch(errorMessage);
   }
+
+  complete(task) {
+    this.dispatch(task);
+  }
+
+  cancelComplete(task) {
+    this.dispatch(task);
+  }
+
+  taskUpdated(task) {
+    this.dispatch(task);
+  }
 }
 
 export default alt.createActions(TaskActions);

@@ -26,6 +26,7 @@ class ChannelStoreBase {
   get collectionName()       { throw "ChannelStoreBase: collectionName getter not implemented"; }
   get model()                { throw "ChannelStoreBase: model getter not implemented"; }
   triggerItemAdded(item)     { throw "ChannelStoreBase: triggerItemAdded method not implemented"; }
+  triggerItemUpdated(item)   { throw "ChannelStoreBase: triggerItemUpdated method not implemented"; }
   triggerItemDeleted(item)   { throw "ChannelStoreBase: triggerItemDeleted method not implemented"; }
   triggerError(errorMessage) { throw "ChannelStoreBase: triggerError method not implemented"; }
 
@@ -69,6 +70,19 @@ class ChannelStoreBase {
       .catch(({errors}) => {
         setTimeout(() => this.triggerItemDeleted(request.item), 0);
         console.log(arguments);
+        this._triggerError(errors);
+      });
+  }
+
+  updateItem(item, changes) {
+    assertChannelConnected('updateItem');
+    let updatedItem = item.merge(changes);
+    setTimeout(() => this.triggerItemUpdated(updatedItem), 0);
+    let request = new Request({type: 'update', item: updatedItem});
+    this._submitRequest(request)
+      .catch(({errors, attributes}) => {
+        let currentItem = new this.model(attributes);
+        setTimeout(() => this.triggerItemUpdated(currentItem), 0);
         this._triggerError(errors);
       });
   }

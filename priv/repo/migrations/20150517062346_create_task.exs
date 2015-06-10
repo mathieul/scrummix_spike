@@ -5,7 +5,7 @@ defmodule Scrummix.Repo.Migrations.CreateTask do
     create table(:tasks) do
       add :label, :string
       add :position, :integer
-      add :completed_at, :time
+      add :completed_at, :timestamp
       add :section_id, :integer
 
       timestamps

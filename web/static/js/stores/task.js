@@ -10,7 +10,8 @@ class TaskStore {
       handleSetTasks:          TaskActions.SET_TASKS,
       handleFetchTasksFailed:  TaskActions.FETCH_TASKS_FAILED,
       handleTaskAdded:         TaskActions.TASK_ADDED,
-      handleTaskDeleted:       TaskActions.TASK_DELETED
+      handleTaskDeleted:       TaskActions.TASK_DELETED,
+      handleTaskUpdated:       TaskActions.TASK_UPDATED
     });
     this.exportAsync(TaskSource);
   }
@@ -32,6 +33,15 @@ class TaskStore {
   handleTaskAdded(task) {
     let filter = this.getInstance()._filter;
     if (!filter || filter(task)) {
+      this.tasks = this.tasks.set(task.id, task);
+      this.emitChange();
+    }
+  }
+
+  handleTaskUpdated(task) {
+    let filter = this.getInstance()._filter;
+    if (!filter || filter(task)) {
+      this.tasks = this.tasks.delete(task.id);
       this.tasks = this.tasks.set(task.id, task);
       this.emitChange();
     }

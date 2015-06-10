@@ -6,7 +6,7 @@ defmodule Scrummix.Task do
   schema "tasks" do
     field :label, :string
     field :position, :integer
-    field :completed_at, Ecto.Time
+    field :completed_at, Ecto.DateTime
     belongs_to :section, Scrummix.Section
 
     timestamps
@@ -16,7 +16,7 @@ defmodule Scrummix.Task do
   @optional_fields ~w(completed_at)
 
   def changeset(model, params \\ :empty) do
-    unless params["position"] do
+    unless model.position || params["position"] do
       position = max_position(params["section_id"]) |> Scrummix.Repo.one || 0
       params = Map.put(params, "position", position + 1)
     end

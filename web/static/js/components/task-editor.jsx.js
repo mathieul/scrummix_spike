@@ -14,13 +14,16 @@ export default React.createClass({
               <div className="thirteen wide column">
                 <div className="inline field">
                   <div className="ui toggle checkbox" ref="toggle">
-                    <input type="checkbox" checked={ !!task.completed_at } />
+                    <input type="checkbox"
+                           checked={ !!task.completed_at } />
                   </div>
                   <span className={ completedClassName }>{ task.label }</span>
                 </div>
               </div>
               <div className="right aligned three wide column">
-                <button className="circular red ui tiny icon button" onClick={ this.handleClick }>
+                <button className="circular red ui tiny icon button"
+                        type="button"
+                        onClick={ this.handleRequestedDeleteTask }>
                   <i className="icon remove"></i>
                 </button>
               </div>
@@ -34,11 +37,26 @@ export default React.createClass({
   componentDidMount() {
     let checkboxNode = React.findDOMNode(this.refs.toggle);
     if (checkboxNode) {
-      jQuery(checkboxNode).checkbox();
+      jQuery(checkboxNode).checkbox({
+        onChecked: this.handleCompleted,
+        onUnchecked: this.handleCompletedCanceled,
+      });
     }
   },
 
-  handleClick(event) {
+  handleCompleted() {
+    if (!this.props.task.completed_at) {
+      TaskActions.complete(this.props.task);
+    }
+  },
+
+  handleCompletedCanceled() {
+    if (this.props.task.completed_at) {
+      TaskActions.cancelComplete(this.props.task);
+    }
+  },
+
+  handleRequestedDeleteTask(event) {
     event.preventDefault();
     TaskActions.deleteTask(this.props.task);
   }

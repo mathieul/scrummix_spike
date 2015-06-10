@@ -9,9 +9,8 @@ import ChannelActions from '../actions/channel';
 class TaskChannelStore extends ChannelStoreBase {
   get collectionName()        { return 'tasks'; }
   get model()                 { return Task; }
-  handleAddTask(task)         { this.addItem(task); }
-  handleDeleteTask(task)      { this.deleteItem(task); }
   triggerItemAdded(task)      { console.log('triggerItemAdded:', task); TaskActions.taskAdded(task); }
+  triggerItemUpdated(task)    { console.log('triggerItemUpdated:', task); TaskActions.taskUpdated(task); }
   triggerItemDeleted(task)    { console.log('triggerItemDeleted:', task); TaskActions.taskDeleted(task); }
   triggerError(errorMessage)  { TaskActions.errorChanged(errorMessage); }
 
@@ -19,10 +18,29 @@ class TaskChannelStore extends ChannelStoreBase {
     super();
 
     this.bindListeners({
-      connect:          ChannelActions.CONNECT,
-      handleAddTask:    TaskActions.ADD_TASK,
-      handleDeleteTask: TaskActions.DELETE_TASK
+      connect:              ChannelActions.CONNECT,
+      handleAdd:            TaskActions.ADD_TASK,
+      handleDelete:         TaskActions.DELETE_TASK,
+      handleComplete:       TaskActions.COMPLETE,
+      handleCancelComplete: TaskActions.CANCEL_COMPLETE
     });
+  }
+
+  handleAdd(task) {
+    this.addItem(task);
+  }
+
+  handleDelete(task) {
+    this.deleteItem(task);
+  }
+
+  handleComplete(task) {
+    let now = (new Date()).toISOString();
+    this.updateItem(task, {completed_at: now});
+  }
+
+  handleCancelComplete(task) {
+    this.updateItem(task, {completed_at: null});
   }
 }
 
