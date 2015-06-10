@@ -49,6 +49,7 @@ defmodule Scrummix.TaskChannel do
     if Map.has_key?(content, "errors") do
       {:reply, {:error, content}, socket}
     else
+      publish_message("updated", {task.id, content}, from)
       {:reply, {:ok, content}, socket}
     end
   end

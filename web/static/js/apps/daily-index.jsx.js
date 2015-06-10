@@ -3,7 +3,6 @@ import SectionListViewer from '../components/section-list-viewer.jsx';
 import TaskChannelStore from '../stores/task-channel';
 import SectionsWithTasksStore from '../stores/sections-with-tasks';
 import ChannelActions from '../actions/channel';
-import SectionActions from '../actions/section';
 /* global Alt */
 /* global React */
 

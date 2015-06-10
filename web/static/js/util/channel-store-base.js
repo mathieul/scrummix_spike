@@ -69,7 +69,6 @@ class ChannelStoreBase {
       })
       .catch(({errors}) => {
         setTimeout(() => this.triggerItemDeleted(request.item), 0);
-        console.log(arguments);
         this._triggerError(errors);
       });
   }
@@ -101,19 +100,25 @@ class ChannelStoreBase {
   _listenForItemEvents() {
     assertChannelConnected('_listenForItemEvents');
     _channel.on('added', this._itemAdded.bind(this));
+    _channel.on('updated', this._itemUpdated.bind(this));
     _channel.on('deleted', this._itemDeleted.bind(this));
   }
 
   _itemAdded(payload) {
-    console.log('_itemAdded:', payload, this.ref);
     if (payload.from !== this.ref) {
       let item = new this.model(payload.attributes);
       this.triggerItemAdded(item);
     }
   }
 
+  _itemUpdated(payload) {
+    if (payload.from !== this.ref) {
+      let item = new this.model(payload.attributes);
+      this.triggerItemUpdated(item);
+    }
+  }
+
   _itemDeleted(payload) {
-    console.log('_itemDeleted:', payload, this.ref);
     if (payload.from !== this.ref) {
       let item = new this.model(payload.attributes);
       this.triggerItemDeleted(item);
