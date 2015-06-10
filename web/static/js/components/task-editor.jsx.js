@@ -15,7 +15,8 @@ export default React.createClass({
                 <div className="inline field">
                   <div className="ui toggle checkbox" ref="toggle">
                     <input type="checkbox"
-                           checked={ !!task.completed_at } />
+                           checked={ !!task.completed_at }
+                           onChange={ this.handleCompleted } />
                   </div>
                   <span className={ completedClassName }>{ task.label }</span>
                 </div>

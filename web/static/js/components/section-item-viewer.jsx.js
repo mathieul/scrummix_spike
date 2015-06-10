@@ -1,8 +1,20 @@
 /* global React */
 
 export default React.createClass({
+  getInitialState() {
+    return {section: this.props.section};
+  },
+
+  componentWillReceiveProps(props) {
+    this.setState({section: this.props.section});
+  },
+
   render() {
-    let section = this.props.section;
+    const {section} = this.state;
+
+    if (!section) {
+      return <div className="ui raised segment" />;
+    }
 
     return (
       <div className="ui raised segment">
@@ -20,7 +32,7 @@ export default React.createClass({
   },
 
   renderTasks(tasks) {
-    if (tasks.length === 0) {
+    if (tasks.size === 0) {
       return (
         <div className="item">
           <i className="arrow right icon"></i>
