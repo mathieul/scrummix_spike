@@ -9,9 +9,9 @@ import ChannelActions from '../actions/channel';
 class TaskChannelStore extends ChannelStoreBase {
   get collectionName()        { return 'tasks'; }
   get model()                 { return Task; }
-  triggerItemAdded(task)      { console.log('triggerItemAdded:', task); TaskActions.taskAdded(task); }
-  triggerItemUpdated(task)    { console.log('triggerItemUpdated:', task); TaskActions.taskUpdated(task); }
-  triggerItemDeleted(task)    { console.log('triggerItemDeleted:', task); TaskActions.taskDeleted(task); }
+  triggerItemAdded(task)      { TaskActions.taskAdded(task); }
+  triggerItemUpdated(task)    { TaskActions.taskUpdated(task); }
+  triggerItemDeleted(task)    { TaskActions.taskDeleted(task); }
   triggerError(errorMessage)  { TaskActions.errorChanged(errorMessage); }
 
   constructor() {

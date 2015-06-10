@@ -9,11 +9,14 @@ export default React.createClass({
   },
 
   componentWillReceiveProps(props) {
-    this.setState({lastErrorMessage: props.lastErrorMessage, section: props.sections.first()});
+    this.setState({
+      lastErrorMessage: props.lastErrorMessage,
+      section: props.sections.first()
+    });
   },
 
   render() {
-    let {section, lastErrorMessage} = this.state;
+    const {section, lastErrorMessage} = this.state;
 
     if (!section) {
       return <div className="empty-section-editor"></div>;

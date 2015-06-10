@@ -34,7 +34,10 @@ class SectionsWithTasks {
         .sortBy(section => section.position)
         .toList()
         .map(function (section) {
-          let sectionTasks = _tasks.filter(task => task.section_id === section.id).toList();
+          let sectionTasks = _tasks
+            .filter(task => task.section_id === section.id)
+            .sortBy(task => task.position)
+            .toList();
           return section.set('tasks', sectionTasks);
         });
       this.emitChange();
