@@ -22,7 +22,7 @@ class SectionsWithTasks {
 
   fetch() {
     SectionStore.fetchSections();
-    TaskStore.fetchTasks();
+    TaskActions.fetchTasks();
   }
 
   buildSectionList(data, storeName) {

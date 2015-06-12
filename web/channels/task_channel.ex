@@ -14,6 +14,12 @@ defmodule Scrummix.TaskChannel do
     end
   end
 
+  def handle_in("fetch", _request, socket) do
+    tasks = Repo.all(Task)
+    serialized = Phoenix.View.render(Scrummix.TaskView, "index.json", %{tasks: tasks})
+    {:reply, {:ok, serialized}, socket}
+  end
+
   def handle_in("add", %{"ref" => ref, "from" => from, "attributes" => attributes}, socket) do
     changeset = Task.changeset(%Task{}, attributes)
 
@@ -62,6 +68,11 @@ defmodule Scrummix.TaskChannel do
     else
       {:reply, {:ok, %{task: %{id: task_id}}}}
     end
+  end
+
+  def handle_in(kind, _payload, socket) do
+    IO.puts kind <> " operation is not implemented"
+    {:reply, {:error, kind <> " operation is not implemented"}, socket}
   end
 
   def handle_out(event, payload, socket) do

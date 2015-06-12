@@ -9,6 +9,7 @@ import ChannelActions from '../actions/channel';
 class TaskChannelStore extends ChannelStoreBase {
   get collectionName()        { return 'tasks'; }
   get model()                 { return Task; }
+  triggerItemsFetched(tasks)  { TaskActions.setTasks(tasks); }
   triggerItemAdded(task)      { TaskActions.taskAdded(task); }
   triggerItemUpdated(task)    { TaskActions.taskUpdated(task); }
   triggerItemDeleted(task)    { TaskActions.taskDeleted(task); }
@@ -19,11 +20,16 @@ class TaskChannelStore extends ChannelStoreBase {
 
     this.bindListeners({
       join:                 ChannelActions.JOIN,
+      handleFetch:          TaskActions.FETCH_TASKS,
       handleAdd:            TaskActions.ADD_TASK,
       handleDelete:         TaskActions.DELETE_TASK,
       handleComplete:       TaskActions.COMPLETE,
       handleCancelComplete: TaskActions.CANCEL_COMPLETE
     });
+  }
+
+  handleFetch() {
+    this.fetchItems();
   }
 
   handleAdd(task) {

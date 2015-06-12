@@ -2,7 +2,6 @@
 /* global inflection */
 /* global uuid */
 
-
 function makeRef() {
   return uuid.v1();
 }
@@ -25,6 +24,7 @@ function assertChannelConnected(name) {
 class ChannelStoreBase {
   get collectionName()       { throw "ChannelStoreBase: collectionName getter not implemented"; }
   get model()                { throw "ChannelStoreBase: model getter not implemented"; }
+  triggerItemsFetched(tasks) { throw "ChannelStoreBase: triggerItemsFetched method not implemented"; }
   triggerItemAdded(item)     { throw "ChannelStoreBase: triggerItemAdded method not implemented"; }
   triggerItemUpdated(item)   { throw "ChannelStoreBase: triggerItemUpdated method not implemented"; }
   triggerItemDeleted(item)   { throw "ChannelStoreBase: triggerItemDeleted method not implemented"; }
@@ -34,6 +34,7 @@ class ChannelStoreBase {
 
   constructor() {
     this.ref = makeRef();
+    this.pending = Immutable.List();
   }
 
   join(settings) {
@@ -51,9 +52,24 @@ class ChannelStoreBase {
     _channel = settings.socket.chan(topic, {token: settings.token || {}});
     _channel
       .join()
-      .receive("ok", () => this._listenForItemEvents())
+      .receive("ok", () => this._joinedChannel())
       .receive("error", errorReporter("error"))
       .receive("ignore", errorReporter("ignore"));
+  }
+
+  fetchItems() {
+    assertChannelConnected('addItem');
+    this._runCallback(channel => {
+      channel.push('fetch', {from: this.ref})
+        .receive('ok', payload => {
+          // TODO: replace payload.tasks with payload.items when channel updated
+          let model = this.model,
+              items = payload.tasks.reduce(function (map, attributes) {
+            return map.set(attributes.id, new model(attributes));
+          }, Immutable.Map());
+          this.triggerItemsFetched(items);
+        });
+    });
   }
 
   addItem(item) {
@@ -98,11 +114,13 @@ class ChannelStoreBase {
       });
   }
 
-  _listenForItemEvents() {
-    assertChannelConnected('_listenForItemEvents');
+  _joinedChannel() {
+    assertChannelConnected('_joinedChannel');
     _channel.on('added', this._itemAdded.bind(this));
     _channel.on('updated', this._itemUpdated.bind(this));
     _channel.on('deleted', this._itemDeleted.bind(this));
+    this.pending.forEach(callback => callback(_channel));
+    this.pending = this.pending.clear();
   }
 
   _itemAdded(payload) {
@@ -128,9 +146,19 @@ class ChannelStoreBase {
 
   _submitRequest(request) {
     return new Promise((resolve, reject) => {
-      let payload = {from: this.ref, ref: request.ref, attributes: request.item.toObject()};
-      _channel.push(request.type, payload).receive('ok', resolve).receive('error', reject)
+      this._runCallback(channel => {
+        let payload = {from: this.ref, ref: request.ref, attributes: request.item.toObject()};
+        channel.push(request.type, payload).receive('ok', resolve).receive('error', reject);
+      });
     });
+  }
+
+  _runCallback(callback) {
+    if (_channel && _channel.state === 'joined') {
+      callback(_channel);
+    } else {
+      this.pending = this.pending.push(callback);
+    }
   }
 
   _triggerError(errors) {

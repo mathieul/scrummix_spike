@@ -5,6 +5,10 @@ class TaskActions {
     this.dispatch(socket);
   }
 
+  fetchTasks() {
+    this.dispatch();
+  }
+
   setTasks(tasks) {
     this.dispatch(tasks);
   }
