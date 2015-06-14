@@ -20,6 +20,10 @@ defmodule Scrummix.Section do
     |> cast(params, @required_fields, @optional_fields)
   end
 
+  def with_id(id) do
+    __MODULE__ |> where([s], s.id == ^id)
+  end
+
   def all_with_tasks do
     __MODULE__ |> preload(:tasks)
   end

@@ -1,13 +1,16 @@
 defmodule Scrummix.TaskChannel do
   use Scrummix.Web, :channel
 
+  import Scrummix.ChannelUtils, only: [subtopic_to_section_id: 1]
+
   alias Scrummix.Repo
   alias Scrummix.Task
 
   @topic_prefix "tasks"
 
-  def join(@topic_prefix <> _all_or_filtered, payload, socket) do
+  def join(@topic_prefix <> subtopic, payload, socket) do
     if authorized?(payload) do
+      socket = socket |> assign(:section_id, subtopic_to_section_id(subtopic))
       {:ok, socket}
     else
       {:error, %{reason: "unauthorized"}}
@@ -15,7 +18,12 @@ defmodule Scrummix.TaskChannel do
   end
 
   def handle_in("fetch", _request, socket) do
-    tasks = Repo.all(Task)
+    tasks = case socket.assigns[:section_id] do
+              :all ->
+                Repo.all(Task)
+              section_id ->
+                Repo.all(Task.with_section_id(section_id))
+            end
     serialized = Phoenix.View.render(Scrummix.TaskView, "items.json", %{tasks: tasks})
     {:reply, {:ok, serialized}, socket}
   end

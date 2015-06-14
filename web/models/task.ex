@@ -24,9 +24,12 @@ defmodule Scrummix.Task do
     |> cast(params, @required_fields, @optional_fields)
   end
 
+  def with_section_id(section_id) do
+    __MODULE__ |> where([t], t.section_id == ^section_id)
+  end
+
   def max_position(section_id) do
-    __MODULE__
-    |> where([t], t.section_id == ^section_id)
+    with_section_id(section_id)
     |> select([t], max(t.position))
   end
 end
