@@ -5,8 +5,7 @@ class SectionStore {
   constructor() {
     this.sections = Immutable.Map();
     this.bindListeners({
-      handleSetSections: SectionActions.SET_SECTIONS,
-      handleFetchSectionsFailed: SectionActions.FETCH_SECTIONS_FAILED
+      handleSetSections: SectionActions.SET_SECTIONS
     });
   }
 
@@ -18,10 +17,6 @@ class SectionStore {
     let filter = this.getInstance()._filter;
     this.errorMessage = null;
     this.sections = filter ? sections.filter(filter) : sections;
-  }
-
-  handleFetchSectionsFailed(message) {
-    this.errorMessage = message;
   }
 }
 

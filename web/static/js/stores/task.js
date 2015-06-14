@@ -6,7 +6,6 @@ class TaskStore {
     this.tasks = Immutable.Map();
     this.bindListeners({
       handleSetTasks:          TaskActions.SET_TASKS,
-      handleFetchTasksFailed:  TaskActions.FETCH_TASKS_FAILED,
       handleTaskAdded:         TaskActions.TASK_ADDED,
       handleTaskDeleted:       TaskActions.TASK_DELETED,
       handleTaskUpdated:       TaskActions.TASK_UPDATED
@@ -21,10 +20,6 @@ class TaskStore {
     let filter = this.getInstance()._filter;
     this.errorMessage = null;
     this.tasks = filter ? tasks.filter(filter) : tasks;
-  }
-
-  handleFetchTasksFailed(message) {
-    this.errorMessage = message;
   }
 
   handleTaskAdded(task) {

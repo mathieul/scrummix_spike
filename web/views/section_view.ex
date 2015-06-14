@@ -5,14 +5,6 @@ defmodule Scrummix.SectionView do
     %{items: render_many(sections, "section.json")}
   end
 
-  def render("index.json", %{sections: sections}) do
-    %{sections: render_many(sections, "section.json")}
-  end
-
-  def render("show.json", %{section: section}) do
-    %{section: render_one(section, "section.json")}
-  end
-
   def render("section.json", %{section: section}) do
     %{
       id: section.id,
