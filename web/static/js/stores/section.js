@@ -1,6 +1,4 @@
 import alt from '../util/alt';
-import SectionSource from '../sources/section';
-import Section from '../models/section';
 import SectionActions from "../actions/section";
 
 class SectionStore {
@@ -10,7 +8,6 @@ class SectionStore {
       handleSetSections: SectionActions.SET_SECTIONS,
       handleFetchSectionsFailed: SectionActions.FETCH_SECTIONS_FAILED
     });
-    this.exportAsync(SectionSource);
   }
 
   static setFilter(filter) {

@@ -6,7 +6,7 @@ defmodule Scrummix.TaskChannel do
 
   @topic_prefix "tasks"
 
-  def join(@topic_prefix <> _all_or_id, payload, socket) do
+  def join(@topic_prefix <> _all_or_filtered, payload, socket) do
     if authorized?(payload) do
       {:ok, socket}
     else
@@ -71,8 +71,9 @@ defmodule Scrummix.TaskChannel do
   end
 
   def handle_in(kind, _payload, socket) do
-    IO.puts kind <> " operation is not implemented"
-    {:reply, {:error, kind <> " operation is not implemented"}, socket}
+    message = "task " <> kind <> " operation is not implemented"
+    IO.puts message
+    {:reply, {:error, message}, socket}
   end
 
   def handle_out(event, payload, socket) do
@@ -86,9 +87,8 @@ defmodule Scrummix.TaskChannel do
     Scrummix.Endpoint.broadcast("#{@topic_prefix}:section_id=#{task.section_id}", kind, payload)
   end
 
-
   # Add authorization logic here as required.
   defp authorized?(payload) do
-    payload["user_id"] == "user-todo" && payload["token"] == "todo-task-token"
+    payload["user_id"] == "user-todo" && payload["token"] == "todo-scrummix-token"
   end
 end

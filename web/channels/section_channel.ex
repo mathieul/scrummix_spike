@@ -2,12 +2,11 @@ defmodule Scrummix.SectionChannel do
   use Scrummix.Web, :channel
 
   alias Scrummix.Repo
-  alias Scrummix.Task
+  alias Scrummix.Section
 
-  @store_topic "sections:store"
+  @topic_prefix "sections"
 
-  def join(@store_topic, payload, socket) do
-    IO.puts "join: #{inspect payload}"
+  def join(@topic_prefix <> _all_or_filtered, payload, socket) do
     if authorized?(payload) do
       {:ok, socket}
     else
@@ -15,34 +14,16 @@ defmodule Scrummix.SectionChannel do
     end
   end
 
-  def handle_in("add_task", payload, socket) do
-    changeset = Task.changeset(%Task{}, payload["task"])
-
-    if changeset.valid? do
-      task = Repo.insert(changeset)
-      serialized = Phoenix.View.render(Scrummix.TaskView, "show.json", %{task: task})
-      serialized = Map.put(serialized, :ref, payload["ref"])
-      {:reply, {:ok, serialized}, socket}
-    else
-      serialized = Phoenix.View.render(Scrummix.ChangesetView, "error.json", changeset: changeset)
-      serialized = Map.put(serialized, :ref, payload["ref"])
-      {:reply, {:error, serialized}, socket}
-    end
+  def handle_in("fetch", _request, socket) do
+    sections = Repo.all(Section)
+    serialized = Phoenix.View.render(Scrummix.SectionView, "items.json", %{sections: sections})
+    {:reply, {:ok, serialized}, socket}
   end
 
-  def handle_in("task_added", payload, socket) do
-    Scrummix.Endpoint.broadcast_from! self, @store_topic, "task_added", payload
-    {:no_reply, socket}
-  end
-
-  def handle_in("del_task", %{"task_id" => task_id}, socket) do
-    if task = Repo.get(Task, task_id) do
-      task = Repo.delete(task)
-      serialized = Phoenix.View.render(Scrummix.TaskView, "show.json", %{task: task})
-      {:reply, {:ok, serialized}, socket}
-    else
-      {:reply, {:ok, %{task: %{id: task_id}}}}
-    end
+  def handle_in(kind, _payload, socket) do
+    message = "section " <> kind <> " operation is not implemented"
+    IO.puts message
+    {:reply, {:error, message}, socket}
   end
 
   def handle_out(event, payload, socket) do
@@ -52,6 +33,6 @@ defmodule Scrummix.SectionChannel do
 
   # Add authorization logic here as required.
   defp authorized?(payload) do
-    payload["user_id"] == "user-todo" && payload["token"] == "todo-channel-token"
+    payload["user_id"] == "user-todo" && payload["token"] == "todo-scrummix-token"
   end
 end

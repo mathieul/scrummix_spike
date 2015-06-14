@@ -1,6 +1,10 @@
 defmodule Scrummix.SectionView do
   use Scrummix.Web, :view
 
+  def render("items.json", %{sections: sections}) do
+    %{items: render_many(sections, "section.json")}
+  end
+
   def render("index.json", %{sections: sections}) do
     %{sections: render_many(sections, "section.json")}
   end
@@ -10,18 +14,11 @@ defmodule Scrummix.SectionView do
   end
 
   def render("section.json", %{section: section}) do
-    unless Ecto.Association.loaded?(section.tasks) do
-      section = section |> Scrummix.Repo.preload(:tasks)
-    end
     %{
       id: section.id,
       label: section.label,
       color: section.color,
-      position: section.position,
-      tasks: Enum.map(section.tasks, &render_task/1)
+      position: section.position
     }
   end
-
-  defp render_task(task),
-    do: Scrummix.TaskView.render("task.json", %{task: task})
 end

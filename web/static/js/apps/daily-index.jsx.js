@@ -1,4 +1,5 @@
 import {Socket} from "phoenix";
+import SectionChannelStore from '../stores/section-channel';
 import TaskChannelStore from '../stores/task-channel';
 import SectionsWithTasksStore from '../stores/sections-with-tasks';
 import ChannelActions from '../actions/channel';
@@ -15,7 +16,7 @@ socket.onClose(reason => console.log("TODO>>> SOCKET CLOSE ---> ", reason));
 
 ChannelActions.join({
   socket: socket,
-  token: 'todo-task-token',
+  token: 'todo-scrummix-token',
   subtopic: 'all'
 });
 

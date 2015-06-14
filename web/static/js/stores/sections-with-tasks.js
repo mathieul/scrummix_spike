@@ -21,7 +21,7 @@ class SectionsWithTasks {
   }
 
   fetch() {
-    SectionStore.fetchSections();
+    SectionActions.fetchSections();
     TaskActions.fetchTasks();
   }
 

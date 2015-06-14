@@ -1,12 +1,16 @@
 import alt from '../util/alt';
 
 class SectionActions {
+  fetchSections() {
+    this.dispatch();
+  }
+
   setSections(sections) {
     this.dispatch(sections);
   }
 
-  fetchSectionsFailed(message) {
-    this.dispatch(message);
+  errorChanged(errorMessage) {
+    this.dispatch(errorMessage);
   }
 }
 

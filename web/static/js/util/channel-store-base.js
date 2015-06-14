@@ -13,18 +13,10 @@ class Request extends Immutable.Record({ref: null, type: null, item: null}) {
   }
 }
 
-let _channel = null;
-
-function assertChannelConnected(name) {
-  if (_channel === null) {
-    throw {message: `channel must be connected for '${name}'.`};
-  }
-}
-
 class ChannelStoreBase {
   get collectionName()       { throw "ChannelStoreBase: collectionName getter not implemented"; }
   get model()                { throw "ChannelStoreBase: model getter not implemented"; }
-  triggerItemsFetched(tasks) { throw "ChannelStoreBase: triggerItemsFetched method not implemented"; }
+  triggerItemsFetched(items) { throw "ChannelStoreBase: triggerItemsFetched method not implemented"; }
   triggerItemAdded(item)     { throw "ChannelStoreBase: triggerItemAdded method not implemented"; }
   triggerItemUpdated(item)   { throw "ChannelStoreBase: triggerItemUpdated method not implemented"; }
   triggerItemDeleted(item)   { throw "ChannelStoreBase: triggerItemDeleted method not implemented"; }
@@ -33,14 +25,14 @@ class ChannelStoreBase {
   get modelName() { return inflection.singularize(this.collectionName); }
 
   constructor() {
-    this.ref = makeRef();
+    this.ref     = makeRef();
     this.pending = Immutable.List();
+    this.channel = null;
   }
 
   join(settings) {
     if (!settings.socket)   { throw "connect: missing socket"; }
     if (!settings.subtopic) { throw "connect: missing subtopic"; }
-    if (_channel) { _channel.disconnect(); }
 
     let topic = `${this.collectionName}:${settings.subtopic}`;
     function errorReporter(kind) {
@@ -49,8 +41,8 @@ class ChannelStoreBase {
         throw message;
       };
     }
-    _channel = settings.socket.chan(topic, {token: settings.token || {}});
-    _channel
+    this.channel = settings.socket.chan(topic, {token: settings.token || {}});
+    this.channel
       .join()
       .receive("ok", () => this._joinedChannel())
       .receive("error", errorReporter("error"))
@@ -58,7 +50,7 @@ class ChannelStoreBase {
   }
 
   fetchItems() {
-    assertChannelConnected('addItem');
+    this._assertChannelConnected('addItem');
     this._runCallback(channel => {
       channel.push('fetch', {from: this.ref})
         .receive('ok', payload => {
@@ -71,7 +63,7 @@ class ChannelStoreBase {
   }
 
   addItem(item) {
-    assertChannelConnected('addItem');
+    this._assertChannelConnected('addItem');
     setTimeout(() => this.triggerItemAdded(item), 0);
     let request = new Request({type: 'add', item: item});
     this._submitRequest(request)
@@ -89,7 +81,7 @@ class ChannelStoreBase {
   }
 
   updateItem(item, changes) {
-    assertChannelConnected('updateItem');
+    this._assertChannelConnected('updateItem');
     let updatedItem = item.merge(changes);
     setTimeout(() => this.triggerItemUpdated(updatedItem), 0);
     let request = new Request({type: 'update', item: updatedItem});
@@ -102,7 +94,7 @@ class ChannelStoreBase {
   }
 
   deleteItem(item) {
-    assertChannelConnected('deleteItem');
+    this._assertChannelConnected('deleteItem');
     setTimeout(() => this.triggerItemDeleted(item), 0);
     let request = new Request({type: 'delete', item: item});
     this._submitRequest(request)
@@ -113,11 +105,11 @@ class ChannelStoreBase {
   }
 
   _joinedChannel() {
-    assertChannelConnected('_joinedChannel');
-    _channel.on('added', this._itemAdded.bind(this));
-    _channel.on('updated', this._itemUpdated.bind(this));
-    _channel.on('deleted', this._itemDeleted.bind(this));
-    this.pending.forEach(callback => callback(_channel));
+    this._assertChannelConnected('_joinedChannel');
+    this.channel.on('added', this._itemAdded.bind(this));
+    this.channel.on('updated', this._itemUpdated.bind(this));
+    this.channel.on('deleted', this._itemDeleted.bind(this));
+    this.pending.forEach(callback => callback(this.channel));
     this.pending = this.pending.clear();
   }
 
@@ -152,8 +144,8 @@ class ChannelStoreBase {
   }
 
   _runCallback(callback) {
-    if (_channel && _channel.state === 'joined') {
-      callback(_channel);
+    if (this.channel && this.channel.state === 'joined') {
+      callback(this.channel);
     } else {
       this.pending = this.pending.push(callback);
     }
@@ -167,6 +159,12 @@ class ChannelStoreBase {
       return messages.concat(format(name, errors[name]));
     }, []);
     this.triggerError(message.join(', '));
+  }
+
+  _assertChannelConnected(name) {
+    if (this.channel === null) {
+      throw {message: `channel must be connected for '${name}'.`};
+    }
   }
 }
 

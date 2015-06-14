@@ -1,6 +1,4 @@
 import alt from '../util/alt';
-import TaskSource from '../sources/task';
-import Task from '../models/task';
 import TaskActions from "../actions/task";
 
 class TaskStore {
@@ -13,7 +11,6 @@ class TaskStore {
       handleTaskDeleted:       TaskActions.TASK_DELETED,
       handleTaskUpdated:       TaskActions.TASK_UPDATED
     });
-    this.exportAsync(TaskSource);
   }
 
   static setFilter(filter) {

@@ -1,10 +1,8 @@
 import alt from '../util/alt';
 import ChannelStoreBase from '../util/channel-store-base';
 import Task from '../models/task';
-import TaskActions from "../actions/task";
+import TaskActions from '../actions/task';
 import ChannelActions from '../actions/channel';
-/* global Immutable */
-/* global inflection */
 
 class TaskChannelStore extends ChannelStoreBase {
   get collectionName()        { return 'tasks'; }

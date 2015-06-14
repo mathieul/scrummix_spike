@@ -13,10 +13,6 @@ class TaskActions {
     this.dispatch(tasks);
   }
 
-  fetchTasksFailed(message) {
-    this.dispatch(message);
-  }
-
   addTask(attributes) {
     this.dispatch(attributes);
   }
