@@ -62,10 +62,8 @@ class ChannelStoreBase {
     this._runCallback(channel => {
       channel.push('fetch', {from: this.ref})
         .receive('ok', payload => {
-          // TODO: replace payload.tasks with payload.items when channel updated
-          let model = this.model,
-              items = payload.tasks.reduce(function (map, attributes) {
-            return map.set(attributes.id, new model(attributes));
+          let items = payload.items.reduce((map, attributes) => {
+            return map.set(attributes.id, new this.model(attributes));
           }, Immutable.Map());
           this.triggerItemsFetched(items);
         });

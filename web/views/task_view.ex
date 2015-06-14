@@ -5,6 +5,10 @@ defmodule Scrummix.TaskView do
     %{tasks: render_many(tasks, "task.json")}
   end
 
+  def render("items.json", %{tasks: tasks}) do
+    %{items: render_many(tasks, "task.json")}
+  end
+
   def render("show.json", %{task: task}) do
     %{task: render_one(task, "task.json")}
   end

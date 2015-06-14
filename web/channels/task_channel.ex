@@ -16,7 +16,7 @@ defmodule Scrummix.TaskChannel do
 
   def handle_in("fetch", _request, socket) do
     tasks = Repo.all(Task)
-    serialized = Phoenix.View.render(Scrummix.TaskView, "index.json", %{tasks: tasks})
+    serialized = Phoenix.View.render(Scrummix.TaskView, "items.json", %{tasks: tasks})
     {:reply, {:ok, serialized}, socket}
   end
 
