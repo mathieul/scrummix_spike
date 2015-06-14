@@ -1,10 +1,10 @@
-Connector = require 'scrummix/stores/store-channel-connector'
+Connector = require 'scrummix/util/channel-store-base'
 {Socket} = require 'test/support/fake-phoenix'
 
 class FakeStore
   trigger: ->
 
-describe "stores/store-channel-connector", ->
+describe "util/channel-store-base", ->
   socket = null
   subject = null
   Thing = Immutable.Record({id: null, name: null})

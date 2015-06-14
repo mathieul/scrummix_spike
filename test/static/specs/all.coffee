@@ -2,4 +2,4 @@
 
 require './support/fake-phoenix'
 
-require './stores/store-channel-connector-spec'
+require './util/channel-store-base-spec'

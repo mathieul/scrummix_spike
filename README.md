@@ -6,3 +6,9 @@ To start your new Phoenix application:
 2. Start Phoenix endpoint with `mix phoenix.server`
 
 Now you can visit `localhost:4000` from your browser.
+
+## Static Testing ##
+
+    $ brunch watch --server
+
+Now visit `localhost:3333` to run the static tests.
