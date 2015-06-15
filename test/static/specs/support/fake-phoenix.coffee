@@ -21,13 +21,14 @@ class Channel
 
   join: -> this
 
-  JOIN: (@state) ->
+  JOIN: () -> @state = 'joining'
 
   receive: (status, cb) ->
     @callbacks[status] = cb
     this
 
   RECEIVE: (status, response) ->
+    @state = 'joined' if status is 'ok'
     if cb = @callbacks[status]
       cb(response)
 
