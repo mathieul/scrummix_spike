@@ -1,5 +1,4 @@
 ChannelStoreBase = require 'scrummix/util/channel-store-base'
-alt              = require 'scrummix/util/alt'
 {Socket}         = require 'test/support/fake-phoenix'
 
 Function::property = (prop, desc) ->
@@ -26,9 +25,8 @@ describe "util/channel-store-base", ->
   beforeEach ->
     socket = new Socket()
     subject = new FakeStore()
-    # subject = alt.createStore(FakeStore, 'FakeStore');
 
-  describe "join", ->
+  describe "#join", ->
     it "throws an error without a socket", ->
       expect(->
         subject.join({token: 'some-token', subtopic: 'all'})
@@ -39,16 +37,29 @@ describe "util/channel-store-base", ->
         subject.join({socket: socket, token: 'some-token'})
       ).to.throw(/missing subtopic/)
 
+    it "starts listening to the channel with subtopic", ->
+      chanSpy = sinon.spy(socket, 'chan')
+      subject.join
+        socket: socket
+        token: 'some-token'
+        subtopic: 'filter=42'
+      expect(chanSpy).to.have.been.calledWith('things:filter=42', {token: 'some-token'})
+
+  describe "#fetchItems", ->
+    it "throws an error if the channel is not connected", ->
+      expect(-> subject.fetchItems()).to.throw(/must be connected/)
+
+    it "pushes a fetch request on the channel", ->
+      subject.join({socket: socket, subtopic: 'all'})
+      channel = socket.channels['things:all']
+      channel.JOIN('joined')
+
+      pushSpy = sinon.spy(channel, 'push')
+      subject.fetchItems()
+      matcher = sinon.match({from: subject.ref})
+      expect(pushSpy).to.have.been.calledWithExactly('fetch', matcher)
+
 # describe "connectChannelMixin()", ->
-#   it "has an empty collection by default", ->
-#     expect(subject.collection.isEmpty()).to.be.true
-
-#   describe "setSocket()", ->
-#     it "can set the socket to start listening to channel", ->
-#       chanSpy = sinon.spy(socket, 'chan')
-#       subject.setSocket(socket)
-#       expect(chanSpy).to.have.been.calledWith('things:store', {})
-
 #   describe "pushPayload()", ->
 #     it "initializes the collection to empty if none present in payload", ->
 #       subject.pushPayload({stuff: [{id: 1, name: "foo"}]})

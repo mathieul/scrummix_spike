@@ -21,6 +21,8 @@ class Channel
 
   join: -> this
 
+  JOIN: (@state) ->
+
   receive: (status, cb) ->
     @callbacks[status] = cb
     this
